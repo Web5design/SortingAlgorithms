@@ -1,0 +1,33 @@
+{
+    "@DEPENDENCIES" : [
+        "./src/Sort.js",
+
+        "./src/comparison/BubbleSort.js",
+        "./src/comparison/CocktailSort.js",
+        "./src/comparison/InsertionSort.js",
+        "./src/comparison/LibrarySort.js",
+        "./src/comparison/MergeSort.js",
+        "./src/comparison/QuickSort.js",
+        "./src/comparison/BuiltinSort.js",
+
+        "./src/arithmetic/CountingSort.js",
+        "./src/arithmetic/IndexSort.js",
+        "./src/arithmetic/StatisticalSort.js"
+    ],
+
+    "@MINIFY" : {
+        "@YUI" : [
+            "--preserve-semi"
+        ],
+        
+        "@CLOSURE" : [
+            "--language_in=ECMASCRIPT5_STRICT"
+        ],
+        
+        "@UGLIFY" : [
+            "-m -c"
+        ]
+    },
+
+    "@OUT" : "./js/sort.min.js"
+}
