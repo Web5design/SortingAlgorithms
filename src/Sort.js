@@ -1,3 +1,14 @@
+/**
+*
+*   Sort.js
+*   Sorting Algorithms implemented in JavaScript
+*   for study and experimentation, in a concise library
+*
+*   @version: 0.1
+* 
+*   https://github.com/foo123/SortingAlgorithms
+*
+**/
 (function(root, undef){
 
     /***********************************************************
@@ -94,42 +105,58 @@
     Sort.utils = {};
     
      // math methods
-    var R = Sort.utils.R = Math.random, Sqrt = Math.sqrt, Log = Math.log;
-    var Sgn = Sort.utils.Sign = function(x){return x ? (x < 0 ? -1 : 1) : 0;};
-    var RNDF = Sort.utils.RandomFloat = function(m, M) { m=(undef==m) ? 0 : m; M=(undef==M) ? 1 : M; return ((M-m)*R() + m); };        
-    var RNDI = Sort.utils.RandomInteger = function(m, M) { return ~~((M-m)*R() + m + 0.5); };        
+    var
+        R = Sort.utils.R = Math.random, 
+        Min = Math.min, Max = Math.max,
+        Sqrt = Math.sqrt, Log = Math.log,
+        Sgn = Sort.utils.Sign = function(x){
+            return x ? (x < 0 ? -1 : 1) : 0;
+        },
+        RNDF = Sort.utils.RandomFloat = function(m, M) { 
+            m = (undef==m) ? 0 : m; 
+            M = (undef==M) ? 1 : M; 
+            return ((M-m)*R() + m); 
+        },
+        RNDI = Sort.utils.RandomInteger = function(m, M) { 
+            return ~~((M-m)*R() + m); 
+        }
+    ;
+        
     // https://en.wikipedia.org/wiki/Normal_distribution
     // https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
     // https://en.wikipedia.org/wiki/Marsaglia_polar_method
-    var _spare, isSpareReady=false;
-    var GAUSS = Sort.utils.Gauss = function(mu, sigma) {
-        if (undef===mu) mu=0.0;
-        if (undef===sigma) sigma=1.0;
-        if (isSpareReady) { isSpareReady=false;  return mu + sigma*_spare;  }
-        // generate 2 new pairs
-        var reject=true, u, v, s, multiplier, z0;
-        while (reject)
-        {
-            u=RNDF(-1,1);  v=RNDF(-1,1);
-            s=u*u+v*v; if (0.0<s && s<1.0) reject=false;
+    var 
+        _spare, isSpareReady=false,
+        G = Sort.utils.Gauss = function(mu, sigma) {
+            
+            mu = (undef===mu) ? 0.0 : mu;
+            sigma = (undef===sigma) ? 1.0 : sigma;
+            
+            if (isSpareReady) 
+            { 
+                isSpareReady=false;  
+                return mu + sigma*_spare;  
+            }
+            
+            // generate 2 new pairs
+            var reject=true, u, v, s, multiplier, z0;
+            while (reject)
+            {
+                u = RNDF(-1,1);  
+                v = RNDF(-1,1);
+                s = u*u+v*v; 
+                reject = (0.0>=s || s>=1.0);
+            }
+            multiplier = Sqrt(-2.0*Log(s)/s);  
+            _spare = v*multiplier; 
+            isSpareReady = true;  
+            
+            z0 = u*multiplier; 
+            return mu + sigma*z0;
         }
-        multiplier=Sqrt(-2.0*Log(s)/s);  
-        z0=u*multiplier; _spare=v*multiplier; isSpareReady=true;  
-        return mu + sigma*z0;
-    };
+    ;
     
-   // auxilliary methods
-    Sort.utils.Range = function(N) { var a=new Array(N); while(N--) a[N]=N;  return a; };
-    
-    // this is a shuffling algorithm
-    // http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-    Sort.Shuffle = Sort.FisherYatesKnuthShuffle = function(a) {
-        var N=a.length, perm, swap;
-        while(N--){ perm=RNDI(0, N); swap=a[N]; a[N]=a[perm]; a[perm]=swap; }   
-        
-        // in-place
-        return a;
-    };
+    // auxilliary methods
     
     // check whether an array of numbers is sorted
     // used to check algorithm validity under different cases
@@ -145,11 +172,80 @@
         {
             x = a[i]-a[i-1];
             sign = x ? (x < 0 ? -1 : 1) : 0;
-            if (sign != firstSign)  return false;
+            if (0!==sign && (sign != firstSign))  return false;
         }
         return true;
     };
     
+    Sort.utils.Range = function(N) { 
+        var a = new Array(N); 
+        while(N--) a[N] = N;  
+        return a; 
+    };
+    
+    Sort.utils.ReverseRange = function(N) { 
+        var a = new Array(N), i = 0; 
+        while(i++<N) a[i] = N-i-1;  
+        return a; 
+    };
+    
+    // this is a shuffling algorithm
+    // http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+    Sort.Shuffle = Sort.FisherYatesKnuthShuffle = function(a) {
+        var N=a.length, perm, swap;
+        while(N--){ perm=RNDI(0, N); swap=a[N]; a[N]=a[perm]; a[perm]=swap; }   
+        // in-place
+        return a;
+    };
+    
+    // simple time statistics class
+    var Stats = function(t) {
+        
+        var 
+            startTime = (undef!==t) ? t : Date.now(), 
+            prevTime = startTime,
+            ms = 0, 
+            msMin = Infinity, 
+            msMax = 0
+        ;
+        
+        this.startTimer = function () {
+            startTime = Date.now();
+            return this;
+        };
+        
+        this.endTimer = function () {
+            var time = Date.now();
+            ms = time - startTime;
+            msMin = Min( msMin, ms );
+            msMax = Max( msMax, ms );
+
+            if ( time > prevTime + 1000 ) prevTime = time;
+            return time;
+        };
+
+        this.updateTimer = function () {
+            startTime = this.endTimer();
+            return this;
+        };
+    };
+    
+    // time a function process and return the statistic
+    Sort.Time = function(processToTime) {
+        var stats;
+        if (processToTime)
+        {
+            stats = new Stats();
+            // start the timer
+            stats.startTimer();
+            // run the process
+            processToTime();
+            // return the timing result
+            return stats.endTimer();
+        }
+        return 0;
+    };
+
     // export it
     root.Sort = Sort;
     
