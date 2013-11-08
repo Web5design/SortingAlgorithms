@@ -3,6 +3,8 @@ SortingAlgorithms
 
 __Various sorting algorithms implementations in JavaScript  (IN PROGRESS, do not use)__
 
+![screenshot](/test/screenshot.png)
+
 Sorting Series (a kind of discrete optimization problem)
 lies at the center of Computer Science and Algorithms
 because of its many uses
