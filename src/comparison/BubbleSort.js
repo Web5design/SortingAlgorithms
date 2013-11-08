@@ -6,6 +6,7 @@
     
     // for reference
     // http://en.wikipedia.org/wiki/Bubble_sort
+    
     Sort.BubbleSort = function(a) {
         var N = a.length, i, newN, t;
 
@@ -29,5 +30,6 @@
         // in-place
         return a;
     };
+    Sort.BubbleSort.reference = "http://en.wikipedia.org/wiki/Bubble_sort";
     
-})(window.Sort);
+})(Sort);

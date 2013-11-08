@@ -46,5 +46,7 @@
         // in-place
         return a;
     };
+    Sort.CocktailSort.reference = "http://en.wikipedia.org/wiki/Cocktail_shaker_sort";
     
-})(window.Sort);
+    
+})(Sort);

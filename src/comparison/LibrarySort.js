@@ -158,5 +158,7 @@
         // in-place
         return a;
     };
+    Sort.LibrarySort.reference = "http://en.wikipedia.org/wiki/Library_sort";
     
-})(window.Sort);
+    
+})(Sort);

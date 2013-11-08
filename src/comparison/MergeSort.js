@@ -111,5 +111,7 @@
         // in-place
         return a;
     };
+    Sort.MergeSort.reference = "http://en.wikipedia.org/wiki/Merge_sort";
     
-})(window.Sort);
+    
+})(Sort);

@@ -63,4 +63,4 @@
         return a;
     };
     
-})(window.Sort);
+})(Sort);

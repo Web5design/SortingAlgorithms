@@ -60,5 +60,6 @@
         // in-place
         return a;
     };
+    Sort.CountingSort.reference = "http://en.wikipedia.org/wiki/Counting_sort";
     
-})(window.Sort);
+})(Sort);

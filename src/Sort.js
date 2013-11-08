@@ -161,18 +161,24 @@
     // check whether an array of numbers is sorted
     // used to check algorithm validity under different cases
     Sort.isSorted = function(a) {
-        var l=a.length, i, x, sign, firstSign;
+        var l=a.length, i, x, sign, firstSign, isEqual;
         
         // already sorted
         if (l<=1) return true;
         
         x = a[1]-a[0];
         firstSign = x ? (x < 0 ? -1 : 1) : 0;
+        isEqual = (0==firstSign);
         for (i=1; i<l; i++)
         {
             x = a[i]-a[i-1];
             sign = x ? (x < 0 ? -1 : 1) : 0;
-            if (0!==sign && (sign != firstSign))  return false;
+            if (isEqual && sign)
+            {
+                firstSign = sign;
+                isEqual = false;
+            }
+            if (sign && (sign != firstSign))  return false;
         }
         return true;
     };
@@ -198,50 +204,63 @@
         return a;
     };
     
-    // simple time statistics class
-    var Stats = function(t) {
+    // simple timer statistics class
+    var Timer = Sort.Timer = function(t) {
         
         var 
-            startTime = (undef!==t) ? t : Date.now(), 
+            startTime = (undef!==t) ? t : (new Date()).getTime(),
             prevTime = startTime,
             ms = 0, 
             msMin = Infinity, 
             msMax = 0
         ;
+        /*clamp = function(ms) {
+            return Max(Min(ms, msMax), msMin);
+        };*/
         
-        this.startTimer = function () {
-            startTime = Date.now();
+        this.start = function () {
+            startTime = (new Date()).getTime();
             return this;
         };
         
-        this.endTimer = function () {
-            var time = Date.now();
+        this.end = function () {
+            var time = (new Date()).getTime();
             ms = time - startTime;
             msMin = Min( msMin, ms );
             msMax = Max( msMax, ms );
 
             if ( time > prevTime + 1000 ) prevTime = time;
-            return time;
+            
+            return ms;
         };
 
-        this.updateTimer = function () {
-            startTime = this.endTimer();
+        this.update = function () {
+            startTime = this.end();
             return this;
         };
     };
     
+    var slice = Array.prototype.slice;
+    
     // time a function process and return the statistic
     Sort.Time = function(processToTime) {
-        var stats;
+        var timer, args;
+        
         if (processToTime)
         {
-            stats = new Stats();
+            args = slice.call(arguments);
+            args.shift();
+            
+            timer = new Timer();
+            
             // start the timer
-            stats.startTimer();
-            // run the process
-            processToTime();
+            timer.start();
+            
+            // run the process with optional args passed
+            processToTime.apply({}, args);
+            
             // return the timing result
-            return stats.endTimer();
+            return timer.end();
         }
         return 0;
     };

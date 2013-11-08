@@ -36,5 +36,7 @@
         // in-place
         return a;
     };
+    Sort.InsertionSort.reference = "http://en.wikipedia.org/wiki/Insertion_sort";
     
-})(window.Sort);
+    
+})(Sort);

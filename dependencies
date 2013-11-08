@@ -5,44 +5,58 @@
 #
 ###################################################
 
-@DEPENDENCIES
 # The input files
+@DEPENDENCIES
 ./src/Sort.js
 
 # Comparison-Based Algorithms
 ./src/comparison/BubbleSort.js
 ./src/comparison/CocktailSort.js
+./src/comparison/ShellSort.js
+./src/comparison/HeapSort.js
 ./src/comparison/InsertionSort.js
+# does not work correctly yet
 ./src/comparison/LibrarySort.js
+# does not work correctly yet
 ./src/comparison/MergeSort.js
 ./src/comparison/QuickSort.js
+# not implemented yet
+./src/comparison/TimSort.js
 ./src/comparison/BuiltinSort.js
 
 # Number/Count-Based Algorithms
+# appears to have an issue
 ./src/arithmetic/CountingSort.js
+# in progress
 ./src/arithmetic/IndexSort.js
+# in progress
 ./src/arithmetic/StatisticalSort.js
+
+@  # dummy separator
 
 # TODO, allow some pre-process to take place
 #@PREPROCESS
 
-@MINIFY
 # Minify the Package
-@YUI
-# Options for Java YUI Compressor Compiler (if used), (default minify options)
---preserve-semi
-@CLOSURE
-# Options for Java Closure Compiler (if used), (default minify options)
---language_in=ECMASCRIPT5_STRICT
-@UGLIFY
+@MINIFY
+
 # Options for Node UglifyJS Compiler (if used), (default minify options, mangle and compress)
+@UGLIFY
 -m -c
+
+# Options for Java Closure Compiler (if used), (default minify options)
+@CLOSURE
+--language_in=ECMASCRIPT5_STRICT
+
+# Options for Java YUI Compressor Compiler (if used), (default minify options)
+@YUI
+--preserve-semi
 
 # TODO, allow some post-process to take place
 #@POSTPROCESS
 
 @  # dummy separator
 
-@OUT
 # The final output file
-./js/sort.min.js
+@OUT
+./test/js/sort.min.js

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sorting Algorithms Tests</title>
+        
+        <link rel="stylesheet" type="text/css" href="./css/common.min.css" />
+        <style type="text/css">
+            body {
+                background-color:#121212;
+                color:#aaa;
+                position:relative;
+            }
+            
+            .showcase {
+                margin:5px 2px;
+                color:white;
+                font-style:italic;
+                font-size:0.8em;
+            }
+            .showcase a{
+                color:#f90b13;
+                display:inline-block;
+                margin-bottom:1px;
+                text-decoration:none;
+                border-bottom:1px dotted #f90b13;
+            }
+            .showcase a:hover, 
+            .showcase a:active, 
+            .showcase a:visited{
+                text-decoration:none;
+            }
+            
+            #controls {
+                display: inline-block;
+            }
+            
+            #console {
+                position:relative;
+                border: 1px solid #aaa;
+                background:#efefef; 
+                color:#121212; 
+                min-height:400px;
+                padding:20px;
+                width:80%;
+            }
+            
+            #panel > div {
+                vertical-align:top;
+            }
+            
+            .button {
+                -moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+                -webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+                box-shadow:inset 0px 1px 0px 0px #ffffff;
+                background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );
+                background:-moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
+                filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
+                background-color:#ededed;
+                -webkit-border-top-left-radius:20px;
+                -moz-border-radius-topleft:20px;
+                border-top-left-radius:20px;
+                -webkit-border-top-right-radius:20px;
+                -moz-border-radius-topright:20px;
+                border-top-right-radius:20px;
+                -webkit-border-bottom-right-radius:20px;
+                -moz-border-radius-bottomright:20px;
+                border-bottom-right-radius:20px;
+                -webkit-border-bottom-left-radius:20px;
+                -moz-border-radius-bottomleft:20px;
+                border-bottom-left-radius:20px;
+                text-indent:0;
+                border:1px solid #dcdcdc;
+                display:inline-block;
+                color:#777777;
+                font-family:Arial;
+                font-size:15px;
+                font-weight:bold;
+                font-style:normal;
+                height:50px;
+                line-height:50px;
+                width:86px;
+                text-decoration:none;
+                text-align:center;
+                text-shadow:1px 1px 0px #ffffff;
+            }
+            .button:hover {
+                background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
+                background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
+                filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
+                background-color:#dfdfdf;
+            }.button:active {
+                position:relative;
+                top:1px;
+            }
+            .button {
+                width:90px;
+                height:30px;
+                line-height:30px;
+                cursor:pointer;
+                position:relative;
+            }
+        </style>
+        
+        <script type="text/javascript" src="./js/Contemplate.min.js"></script>
+        <script type="text/javascript" src="./js/sort.min.js"></script>
+    
+    </head>
+    
+    <body>
+        
+        <header id="header" class="column-one-whole">
+            <h1>Sorting Algorithms Tests</h1>
+        </header>
+        
+        <br />
+        
+        <section id="panel" class="column-one-whole">
+            
+            <div class="column-one-third">
+                <strong>Select Algorithm: </strong><br />
+                <div id="controls"></div> <input id="test" type="button" class="button" value="Run Test" />
+            </div>
+            
+            <div class="column-one-half">
+                <strong>Console: </strong> <br />
+                <div id="console"><br /></div>
+            </div>
+            
+        </section>
+        
+        <br />
+        
+        <footer id="footer" class="column-one-whole">
+        </footer>
+        
+        <script type="text/javascript">
+            
+            // utils
+            var 
+                $S = Sort,
+                
+                Log = (console && console.log) ? function(s){console.log(s);} : function() {},
+                Str = Object.prototype.toString,
+                isArray = function(a) { return (a && '[object Array]'==Str.call(a)); },
+                Get = function(id) { return document.getElementById(id); },
+                Style = function(e, p, v) { e.style[''+p] = ''+v; return e; },
+                Html = function(e, html){ e.innerHTML = ''+html; return e;},
+                Event = function(e, ev, f) { e.addEventListener(ev, f, false); return e; },
+                Append = function(e, n) { e.appendChild(n); return e; },
+                AppendAll = function(e, ns) { var l=ns.length, i=0; while (i<l) { e.appendChild(ns[i]); i++; } return e; },
+            
+                algos = [
+                    'BuiltinSort',
+                    'BubbleSort',
+                    'CocktailSort',
+                    'ShellSort',
+                    'HeapSort',
+                    'InsertionSort',
+                    'LibrarySort',
+                    'MergeSort',
+                    'QuickSort',
+                    'CountingSort',
+                    'IndexSort',
+                    'StatisticalSort'
+                ],
+                
+                controls = Get('controls'),
+                con = Get('console'),
+                test = Get('test'),
+                e = function(s, style){ 
+                    s = s || ''; 
+                    if ( isArray(s) ) s = '[' + s.join(',') + ']';  
+                    if (style) s = '<'+style+'>' + s + '</'+style+'>';
+                    con.innerHTML += '' + s + '<br />'; 
+                },
+                cls = function(){ con.innerHTML = ''; }
+                ;
+                
+                Contemplate.addInline({
+                    'select': '<% %htmlselect($data, {id: "algo-select"}) %>'
+                });
+                Html(controls, Contemplate.tpl('select', {data:algos}));
+                
+            // some custom array methods
+            Array.prototype.isSorted=function() { return $S.isSorted(this); }
+            Array.prototype.shuffle=function() { return $S.Shuffle(this); }
+            Array.prototype.rshort=function() { this.sort().reverse(); return this; }
+                
+            function doTest()
+            {
+                //
+                // get selected sorting algorithm
+                //
+                var select = Get('algo-select'),
+                    selectedAlgorithm,
+                    sortingFunction,
+                    reflink,
+                    tms;
+                
+                selectedAlgorithm = algos[select.selectedIndex];
+                sortingFunction = $S[selectedAlgorithm];
+                reflink = sortingFunction.reference || '#';
+                
+                //
+                // prepare test data
+                //
+                var N = 40, a = new Array(N), asorted;
+                var i, m = 7.1, C = 11.3124, range = 0;
+                for (i=0; i<N; i++)
+                {
+                    /*if (i%2==0) range=100;
+                    else range=0;
+                    a[i]=range+Math.random();*/
+                    
+                    a[i]=m + (i%9000)*C;
+                }
+                
+                a=[9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+                //a=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                //a=[1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+                
+                //a.rsort();
+                //a.shuffle();
+                
+                
+                // do the sort
+                asorted = a.slice();
+                tms = $S.Time(sortingFunction, asorted);
+                
+                // show results
+                
+                // clear the log panel
+                cls();
+                
+                // show selected algorithm
+                e('Selected Algorithm: ' + selectedAlgorithm, 'strong');
+                e('Reference Link: ' + '<a href="'+reflink+'" target="_blank">'+reflink+'</a>');
+                e();
+                
+                // show original data
+                e('Original:')
+                e(a);
+                // show sorted data
+                e('Result:')
+                e(asorted);
+                e();
+                
+                // show stats and saniy check
+                e('Time Taken = ' + tms.toString() + ' (ms)', 'strong');
+                e('Result Sorted: ' + asorted.isSorted(), 'i');
+                e();
+            }
+            
+            // do test
+            Event(test, 'click', doTest);
+            
+        </script>
+    
+    </body>
+</html>

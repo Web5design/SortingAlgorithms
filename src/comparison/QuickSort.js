@@ -130,5 +130,7 @@
         // in-place
         return a;
     };
+    Sort.QuickSort.reference = "http://en.wikipedia.org/wiki/Quicksort";
     
-})(window.Sort);
+    
+})(Sort);
