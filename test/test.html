@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Sorting Algorithms Tests</title>
         
         <link rel="stylesheet" type="text/css" href="./css/common.min.css" />
         <style type="text/css">
@@ -101,9 +100,12 @@
             }
         </style>
         
+        <script type="text/javascript" src="./js/utils.js"></script>
         <script type="text/javascript" src="./js/Contemplate.min.js"></script>
         <script type="text/javascript" src="./js/sort.min.js"></script>
-    
+        
+        <title>Sorting Algorithms Tests</title>
+        
     </head>
     
     <body>
@@ -134,22 +136,12 @@
         </footer>
         
         <script type="text/javascript">
+        //<![CDATA[
             
-            // utils
             var 
                 $S = Sort,
                 
-                Log = (console && console.log) ? function(s){console.log(s);} : function() {},
-                Str = Object.prototype.toString,
-                isArray = function(a) { return (a && '[object Array]'==Str.call(a)); },
-                Get = function(id) { return document.getElementById(id); },
-                Style = function(e, p, v) { e.style[''+p] = ''+v; return e; },
-                Html = function(e, html){ e.innerHTML = ''+html; return e;},
-                Event = function(e, ev, f) { e.addEventListener(ev, f, false); return e; },
-                Append = function(e, n) { e.appendChild(n); return e; },
-                AppendAll = function(e, ns) { var l=ns.length, i=0; while (i<l) { e.appendChild(ns[i]); i++; } return e; },
-            
-                algos = [
+                sort_algos = [
                     'BuiltinSort',
                     'BubbleSort',
                     'CocktailSort',
@@ -164,40 +156,45 @@
                     'StatisticalSort'
                 ],
                 
-                controls = Get('controls'),
-                con = Get('console'),
-                test = Get('test'),
+                controls = U.Get('controls'),
+                
+                con = U.Get('console'),
+                
+                test = U.Get('test'),
+                
                 e = function(s, style){ 
                     s = s || ''; 
-                    if ( isArray(s) ) s = '[' + s.join(',') + ']';  
-                    if (style) s = '<'+style+'>' + s + '</'+style+'>';
-                    con.innerHTML += '' + s + '<br />'; 
+                    //if ( isArray(s) ) s = '[' + s.join(',') + ']';  
+                    if (style) s = '<'+style+'> ' + s.toString() + ' </'+style+'>';
+                    con.Append( s.toString() + ' <br />'); 
                 },
-                cls = function(){ con.innerHTML = ''; }
+                
+                cls = function(){ con.Html(''); }
                 ;
                 
-                Contemplate.addInline({
-                    'select': '<% %htmlselect($data, {id: "algo-select"}) %>'
-                });
-                Html(controls, Contemplate.tpl('select', {data:algos}));
-                
             // some custom array methods
+            Array.prototype.toString=function() { return '[' + this.join(',') + ']'; }
             Array.prototype.isSorted=function() { return $S.isSorted(this); }
             Array.prototype.shuffle=function() { return $S.Shuffle(this); }
             Array.prototype.rshort=function() { this.sort().reverse(); return this; }
+                
+            Contemplate.addInline({
+                'select': '<% %htmlselect($data, {id: "algo-select"}) %>'
+            });
+            controls.Html( Contemplate.tpl('select', {data : sort_algos}) );
                 
             function doTest()
             {
                 //
                 // get selected sorting algorithm
                 //
-                var select = Get('algo-select'),
+                var select = new U.ID('algo-select'),
                     selectedAlgorithm,
                     sortingFunction,
                     reflink,
                     tms;
                 
-                selectedAlgorithm = algos[select.selectedIndex];
+                selectedAlgorithm = sort_algos[select.selectedIndex];
                 sortingFunction = $S[selectedAlgorithm];
                 reflink = sortingFunction.reference || '#';
                 
@@ -223,11 +220,15 @@
                 //a.shuffle();
                 
                 
-                // do the sort
+                //
+                // do the sort test
+                //
                 asorted = a.slice();
                 tms = $S.Time(sortingFunction, asorted);
                 
+                //
                 // show results
+                //
                 
                 // clear the log panel
                 cls();
@@ -247,13 +248,14 @@
                 
                 // show stats and saniy check
                 e('Time Taken = ' + tms.toString() + ' (ms)', 'strong');
-                e('Result Sorted: ' + asorted.isSorted(), 'i');
+                e('Result Sorted: ' + asorted.isSorted().toString(), 'i');
                 e();
             }
             
             // do test
-            Event(test, 'click', doTest);
+            test.Event('click', doTest);
             
+        //]]>
         </script>
     
     </body>
