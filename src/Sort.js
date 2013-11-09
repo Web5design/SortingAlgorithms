@@ -161,24 +161,20 @@
     // check whether an array of numbers is sorted
     // used to check algorithm validity under different cases
     Sort.isSorted = function(a) {
-        var l=a.length, i, x, sign, firstSign, isEqual;
+        var N=a.length, i, x, s, fs, tie;
         
         // already sorted
-        if (l<=1) return true;
+        if (N<=1) return true;
         
         x = a[1]-a[0];
-        firstSign = x ? (x < 0 ? -1 : 1) : 0;
-        isEqual = (0==firstSign);
-        for (i=1; i<l; i++)
+        fs = x ? (x < 0 ? -1 : 1) : 0;
+        tie = (0==fs) ? true : false;
+        for (i=1; i<N; i++)
         {
             x = a[i]-a[i-1];
-            sign = x ? (x < 0 ? -1 : 1) : 0;
-            if (isEqual && sign)
-            {
-                firstSign = sign;
-                isEqual = false;
-            }
-            if (sign && (sign != firstSign))  return false;
+            s = x ? (x < 0 ? -1 : 1) : 0;
+            if (tie && s) { fs = s; tie = false; }
+            if (s && (s !== fs))  return false;
         }
         return true;
     };
@@ -190,8 +186,8 @@
     };
     
     Sort.utils.ReverseRange = function(N) { 
-        var a = new Array(N), i = 0; 
-        while(i++<N) a[i] = N-i-1;  
+        var a = new Array(N), i = -1; 
+        while(++i<N) a[i] = N-i-1;  
         return a; 
     };
     
@@ -209,14 +205,18 @@
         
         var 
             startTime = (undef!==t) ? t : (new Date()).getTime(),
-            prevTime = startTime,
-            ms = 0, 
+            //prevTime = startTime,
+            endTime = Infinity,
             msMin = Infinity, 
             msMax = 0
         ;
-        /*clamp = function(ms) {
-            return Max(Min(ms, msMax), msMin);
-        };*/
+        
+        this.getMs = function() {
+            var ms = endTime - startTime;
+            msMin = Min( msMin, ms );
+            msMax = Max( msMax, ms );
+            return ms;
+        };
         
         this.start = function () {
             startTime = (new Date()).getTime();
@@ -224,18 +224,22 @@
         };
         
         this.end = function () {
-            var time = (new Date()).getTime();
-            ms = time - startTime;
-            msMin = Min( msMin, ms );
-            msMax = Max( msMax, ms );
-
-            if ( time > prevTime + 1000 ) prevTime = time;
-            
-            return ms;
+            endTime = (new Date()).getTime();
+            //if ( endTime > prevTime + 1000 ) prevTime = endTime;
+            return this;
         };
 
+        this.reset = function () {
+            startTime = (new Date()).getTime();
+            //prevTime = startTime;
+            endTime = Infinity;
+            return this;
+        };
+        
         this.update = function () {
-            startTime = this.end();
+            endTime = (new Date()).getTime();
+            //if ( endTime > prevTime + 1000 ) prevTime = endTime;
+            startTime = endTime;
             return this;
         };
     };
@@ -243,12 +247,13 @@
     var slice = Array.prototype.slice;
     
     // time a function process and return the statistic
-    Sort.Time = function(processToTime) {
-        var timer, args;
+    Sort.Time = function(callback, processToTime) {
+        var timer, args, ms, delay=200;
         
         if (processToTime)
         {
             args = slice.call(arguments);
+            args.shift();
             args.shift();
             
             timer = new Timer();
@@ -256,11 +261,17 @@
             // start the timer
             timer.start();
             
-            // run the process with optional args passed
-            processToTime.apply({}, args);
-            
-            // return the timing result
-            return timer.end();
+            // use a delay, to avoid timer get stuck
+            setTimeout(function(){
+                
+                // run the process with optional args passed
+                processToTime.apply({}, args);
+                // return the timing result
+                timer.end();
+                
+                if (callback) callback.call(timer, timer.getMs()-delay);
+                
+            }, delay);
         }
         return 0;
     };

@@ -9,26 +9,32 @@
 @DEPENDENCIES
 ./src/Sort.js
 
-# Comparison-Based Algorithms
+### Comparison-Based Algorithms ###
 ./src/comparison/BubbleSort.js
 ./src/comparison/CocktailSort.js
 ./src/comparison/ShellSort.js
 ./src/comparison/HeapSort.js
 ./src/comparison/InsertionSort.js
-# does not work correctly yet
+
+# !!does not work correctly yet!!
 ./src/comparison/LibrarySort.js
-# does not work correctly yet
+
+# !!does not work correctly yet!!
 ./src/comparison/MergeSort.js
+
 ./src/comparison/QuickSort.js
-# not implemented yet
+
+# !!not implemented yet!!
 ./src/comparison/TimSort.js
+
 ./src/comparison/BuiltinSort.js
 
-# Number/Count-Based Algorithms
-# appears to have an issue
+### Number/Count-Based Algorithms ###
 ./src/arithmetic/CountingSort.js
-# in progress
+
+# almost ready
 ./src/arithmetic/IndexSort.js
+
 # in progress
 ./src/arithmetic/StatisticalSort.js
 

@@ -118,12 +118,24 @@
         
         <section id="panel" class="column-one-whole">
             
-            <div class="column-one-third">
+            <div class="column-one-fourth">
                 <strong>Select Algorithm: </strong><br />
-                <div id="controls"></div> <input id="test" type="button" class="button" value="Run Test" />
+                <div id="select1"></div> 
+                <br /><br />
+                
+                <strong>Select Data Size: </strong><br />
+                <div id="select2"></div> 
+                <br /><br />
+                
+                <strong>Select Data Type: </strong><br />
+                <div id="select3"></div> 
+                <br /><br />
+                
+                <input id="test" type="button" class="button" value="Run Test" />
+            
             </div>
             
-            <div class="column-one-half">
+            <div class="column-two-thirds">
                 <strong>Console: </strong> <br />
                 <div id="console"><br /></div>
             </div>
@@ -142,22 +154,41 @@
                 $S = Sort,
                 
                 sort_algos = [
-                    'BuiltinSort',
-                    'BubbleSort',
-                    'CocktailSort',
-                    'ShellSort',
-                    'HeapSort',
-                    'InsertionSort',
-                    'LibrarySort',
-                    'MergeSort',
-                    'QuickSort',
-                    'TimSort',
-                    'CountingSort',
-                    'IndexSort',
-                    'StatisticalSort'
+                    'BuiltinSort'
+                    ,'BubbleSort'
+                    ,'CocktailSort'
+                    ,'ShellSort'
+                    ,'HeapSort'
+                    ,'InsertionSort'
+                    //,'LibrarySort'
+                    //,'MergeSort'
+                    ,'QuickSort'
+                    //,'TimSort'
+                    ,'CountingSort'
+                    ,'IndexSort'
+                    //,'StatisticalSort'
                 ],
                 
-                controls = U.Get('controls'),
+                sort_select,
+                
+                data_size = [
+                    10,
+                    20,
+                    50,
+                    100,
+                    1000,
+                    10000
+                ],
+                
+                size_select,
+                
+                data_type = [
+                    'already-sorted',
+                    'reverse-sorted',
+                    'shuffled'
+                ],
+                
+                data_type_select,
                 
                 con = U.Get('console'),
                 
@@ -180,77 +211,101 @@
             Array.prototype.rshort=function() { this.sort().reverse(); return this; }
                 
             Contemplate.addInline({
-                'select': '<% %htmlselect($data, {id: "algo-select"}) %>'
+                'sort-select': '<% %htmlselect($data, {id: "sort-select"}) %>',
+                'size-select': '<% %htmlselect($data, {id: "size-select"}) %>',
+                'data-type-select': '<% %htmlselect($data, {id: "data-type-select"}) %>'
             });
-            controls.Html( Contemplate.tpl('select', {data : sort_algos}) );
-                
+            U.Get('select1').Append( Contemplate.tpl('sort-select', {data : sort_algos}) );
+            U.Get('select2').Append( Contemplate.tpl('size-select', {data : data_size}) );
+            U.Get('select3').Append( Contemplate.tpl('data-type-select', {data : data_type}) );
+            
+            sort_select = U.ID('sort-select');
+            size_select = U.ID('size-select');
+            data_type_select = U.ID('data-type-select');
+            
             function doTest()
             {
                 //
                 // get selected sorting algorithm
                 //
-                var select = new U.ID('algo-select'),
-                    selectedAlgorithm,
-                    sortingFunction,
-                    reflink,
-                    tms;
+                var selectedAlgorithm, sortingFunction,  reflink, 
+                    type, N, a, asorted
+                ;
                 
-                selectedAlgorithm = sort_algos[select.selectedIndex];
+                N = data_size[size_select.selectedIndex];
+                
+                type = data_type[data_type_select.selectedIndex];
+                
+                selectedAlgorithm = sort_algos[sort_select.selectedIndex];
                 sortingFunction = $S[selectedAlgorithm];
                 reflink = sortingFunction.reference || '#';
                 
                 //
                 // prepare test data
                 //
-                var N = 40, a = new Array(N), asorted;
-                var i, m = 7.1, C = 11.3124, range = 0;
+                /*var i, m = 7.1, C = 11.3124, range = 0;
                 for (i=0; i<N; i++)
                 {
                     /*if (i%2==0) range=100;
                     else range=0;
-                    a[i]=range+Math.random();*/
+                    a[i]=range+Math.random();* /
                     
                     a[i]=m + (i%9000)*C;
+                }*/
+                
+                a = $S.utils.Range(N);
+                
+                // reverse-sorted
+                if ('reverse-sorted'==type)
+                {
+                    a.reverse();
                 }
-                
-                a=[9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
-                //a=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-                //a=[1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-                
-                //a.rsort();
-                //a.shuffle();
-                
+                // shuffled
+                else if ('shuffled'==type)
+                {
+                    a.shuffle();
+                }
+                // sorted, leave as is
+                else 
+                {
+                }
                 
                 //
                 // do the sort test
                 //
                 asorted = a.slice();
-                tms = $S.Time(sortingFunction, asorted);
                 
-                //
-                // show results
-                //
+                $S.Time(function(tms){
                 
-                // clear the log panel
-                cls();
-                
-                // show selected algorithm
-                e('Selected Algorithm: ' + selectedAlgorithm, 'strong');
-                e('Reference Link: ' + '<a href="'+reflink+'" target="_blank">'+reflink+'</a>');
-                e();
-                
-                // show original data
-                e('Original:')
-                e(a);
-                // show sorted data
-                e('Result:')
-                e(asorted);
-                e();
-                
-                // show stats and saniy check
-                e('Time Taken = ' + tms.toString() + ' (ms)', 'strong');
-                e('Result Sorted: ' + asorted.isSorted().toString(), 'i');
-                e();
+                    //
+                    // show results
+                    //
+                    
+                    // clear the log panel
+                    cls();
+                    
+                    // show selected algorithm
+                    e('Selected Algorithm: ' + selectedAlgorithm, 'strong');
+                    e('Reference Link: ' + '<a href="'+reflink+'" target="_blank">'+reflink+'</a>');
+                    e();
+                    
+                    // show original data
+                    if (N<50)
+                    {
+                        e('Original:')
+                        e(a);
+                        // show sorted data
+                        e('Result:')
+                        e(asorted);
+                        e();
+                    }
+                    
+                    // show stats and sanity check
+                    e('Time Taken = ' + tms.toString() + ' (ms)', 'strong');
+                    e('Sanity Check: Result is <strong>' + (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED') + '</strong>', 'i');
+                    e();
+                    
+                }, sortingFunction, asorted);
             }
             
             // do test
