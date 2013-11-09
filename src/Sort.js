@@ -248,7 +248,7 @@
     
     // time a function process and return the statistic
     Sort.Time = function(callback, processToTime) {
-        var timer, args, ms, delay=200;
+        var timer, args, ms, delay1=200, delay2=200, d=delay1+delay2;
         
         if (processToTime)
         {
@@ -261,17 +261,22 @@
             // start the timer
             timer.start();
             
-            // use a delay, to avoid timer get stuck
+            // use delays, to avoid timer get stuck
             setTimeout(function(){
                 
                 // run the process with optional args passed
                 processToTime.apply({}, args);
-                // return the timing result
-                timer.end();
                 
-                if (callback) callback.call(timer, timer.getMs()-delay);
+                setTimeout(function(){
+                    // return the timing result
+                    timer.end();
+                    var ms = timer.getMs()-d;
+                    if (callback) callback.call(timer, ms);
+                    
+                }, delay2);
                 
-            }, delay);
+                
+            }, delay1);
         }
         return 0;
     };
