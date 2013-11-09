@@ -43,13 +43,17 @@
                 border: 1px solid #aaa;
                 background:#efefef; 
                 color:#121212; 
-                min-height:400px;
+                min-height:300px;
                 padding:20px;
                 width:80%;
             }
             
             #panel > div {
                 vertical-align:top;
+            }
+            
+            #footer {
+                margin-top: 20px;
             }
             
             .button {
@@ -110,23 +114,41 @@
         <script type="text/javascript" src="./js/sort.min.js"></script>
         
         <!-- templates used -->
-        <script type="text/html-tpl" id="output-tpl">
-        <strong>Selected Algorithm: <% $selectedAlgorithm %></strong>
-        <br /><br />
-        Reference Link: <a href="<% $reflink %>" target="_blank"><% $reflink %></a>
-        <br /><br />
-        <% %if ($showData) %>
-        Original: <% $a %>
-        <br />
-        Result: <% $asorted %>
-        <br />
-        <br /><br />
-        <% %endif() %>
-        <strong>Time Taken = <% $tms %> (ms)</strong>
-        <br /><br />
-        <i>Sanity Check: Result is <strong><% $SORTED %></strong></i>
-        <br /><br />
+        <script type="text/html-contemplate-tpl" id="output-tpl">
+            <strong>Selected Algorithm: <% $selectedAlgorithm %></strong>
+            <br /><br />
+            Reference Link: <a href="<% $reflink %>" target="_blank"><% $reflink %></a>
+            <br /><br />
+            <% %if ($showData) %>
+            Original: <% $a %>
+            <br />
+            Result: <% $asorted %>
+            <br />
+            <br /><br />
+            <% %endif() %>
+            <strong>Time Taken = <% $tms %> (ms)</strong>
+            <br /><br />
+            <i>Sanity Check: Result is <strong><% $SORTED %></strong></i>
+            <br /><br />
         </script>
+        
+        <script type="text/html-contemplate-tpl" id="controls-tpl">
+            <strong>Select Sorting Algorithm: </strong><br />
+            <div class="cont"><% %htmlselect($algo_data, {id: "sort-select"}) %></div> 
+            
+            <strong>Select Data Size: </strong><br />
+            <div class="cont"><% %htmlselect($size_data, {id: "size-select"}) %></div> 
+            
+            <strong>Select Data Type: </strong><br />
+            <div class="cont"><% %htmlselect($data_type_data, {id: "data-type-select"}) %></div> 
+            
+            <strong>Select pre-sort state: </strong><br />
+            <div class="cont"><% %htmlselect($sort_type_data, {id: "sort-type-select"}) %></div> 
+            
+            <input id="test" type="button" class="button" value="Run Test" />
+            <br /><br />
+        </script>
+        <!-- end templates used -->
         
         <title>Sorting Algorithms Tests</title>
         
@@ -144,24 +166,10 @@
         
         <section id="panel" class="column-one-whole">
             
-            <div class="column-one-fourth">
-                <strong>Select Sorting Algorithm: </strong><br />
-                <div id="select1" class="cont"></div> 
-                
-                <strong>Select Data Size: </strong><br />
-                <div id="select2" class="cont"></div> 
-                
-                <strong>Select Data Type: </strong><br />
-                <div id="select3" class="cont"></div> 
-                
-                <strong>Select pre-sort state: </strong><br />
-                <div id="select4" class="cont"></div> 
-                
-                <input id="test" type="button" class="button" value="Run Test" />
-                <br /><br />
+            <div id="controls-container" class="column-one-fourth">
             </div>
             
-            <div class="column-two-thirds">
+            <div  id="output-container" class="column-two-thirds">
                 <strong>Console: </strong> <br />
                 <div id="console"><br /></div>
             </div>
@@ -177,9 +185,8 @@
         <script type="text/javascript">
         //<![CDATA[
             
-            var 
-                $S = Sort,
-                
+            var $S = Sort,  RI = $S.utils.RandomInteger,  RF = $S.utils.RandomFloat,
+
                 sort_algos = [
                     'BuiltinSort'
                     ,'BubbleSort'
@@ -194,9 +201,7 @@
                     ,'CountingSort'
                     ,'IndexSort'
                     //,'StatisticalSort'
-                ],
-                
-                sort_select,
+                ], sort_select,
                 
                 data_size = [
                     10
@@ -205,9 +210,7 @@
                     ,100
                     ,1000
                     ,10000
-                ],
-                
-                size_select,
+                ], size_select,
                 
                 data_type = [
                     'integer-range'
@@ -215,36 +218,19 @@
                     ,'integer-dynamic-range'
                     ,'random-equidistributable'
                     ,'random-dynamic-range'
-                ],
-                
-                data_type_select,
+                ], data_type_select,
                 
                 sort_type = [
                     'already-sorted'
                     ,'reverse-sorted'
                     ,'random-shuffled'
-                ],
+                ], sort_type_select,
                 
-                sort_type_select,
-                
-                RI = $S.utils.RandomInteger,
-                RF = $S.utils.RandomFloat,
-                
-                con = U.Get('console'),
-                
-                test = U.Get('test')/*,
-                
-                e = function(s, style){ 
-                    s = s || ''; 
-                    //if ( isArray(s) ) s = '[' + s.join(',') + ']';  
-                    if (style) s = '<'+style+'> ' + s.toString() + ' </'+style+'>';
-                    con.Append( s.toString() + ' <br />'); 
-                },
-                
-                cls = function(){ con.Html(''); }*/
-                ;
+                controls = U.Get('controls-container'), con = U.Get('console'), test
+            ;
                 
             // some extra custom array methods used in the tests
+            function asNumbers(a,b) { return a - b; }
             Array.prototype.toString=function() { return '[ ' + this.join(', ') + ' ]'; }
             Array.prototype.isSorted=function() { return $S.isSorted(this); }
             Array.prototype.shuffle=function() { return $S.Shuffle(this); }
@@ -252,24 +238,22 @@
                 
             // templates defined in the dom
             Contemplate.add({
+                'controls' : '#controls-tpl',
                 'output': '#output-tpl'
             });
             
-            // inline templates
-            Contemplate.addInline({
-                'sort-select': '<% %htmlselect($data, {id: "sort-select"}) %>',
-                'size-select': '<% %htmlselect($data, {id: "size-select"}) %>',
-                'data-type-select': '<% %htmlselect($data, {id: "data-type-select"}) %>',
-                'sort-type-select': '<% %htmlselect($data, {id: "sort-type-select"}) %>'
-            });
-            
             // add them to the page
-            U.Get('select1').Append( Contemplate.tpl('sort-select', {data : sort_algos}) );
-            U.Get('select2').Append( Contemplate.tpl('size-select', {data : data_size}) );
-            U.Get('select3').Append( Contemplate.tpl('data-type-select', {data : data_type}) );
-            U.Get('select4').Append( Contemplate.tpl('sort-type-select', {data : sort_type}) );
+            controls.Html(
+                Contemplate.tpl('controls', {
+                    algo_data : sort_algos,
+                    size_data : data_size,
+                    data_type_data : data_type,
+                    sort_type_data : sort_type
+                })
+            );
             
             // get the necessary references
+            test = U.Get('test');
             sort_select = U.ID('sort-select');
             size_select = U.ID('size-select');
             sort_type_select = U.ID('sort-type-select');
@@ -278,8 +262,6 @@
             // test routine
             function doTest()
             {
-                function asNumbers(a,b) { return a - b; }
-    
                 //
                 // get selected sorting algorithm
                 //
@@ -386,6 +368,7 @@
                 // sorted, leave as is
                 else { }
                 
+                
                 //
                 // do the sort test
                 //
@@ -396,7 +379,6 @@
                     //
                     // show results
                     //
-                    
                     con.Html( 
                         Contemplate.tpl( 'output', {
                             selectedAlgorithm : selectedAlgorithm,
@@ -409,31 +391,6 @@
                         } ) 
                     );
                     
-                    /*
-                    // clear the log panel
-                    cls();
-                    
-                    // show selected algorithm
-                    e('Selected Algorithm: ' + selectedAlgorithm, 'strong');
-                    e('Reference Link: ' + '<a href="'+reflink+'" target="_blank">'+reflink+'</a>');
-                    e();
-                    
-                    // show original data
-                    if (N<50)
-                    {
-                        e('Original:')
-                        e(a);
-                        // show sorted data
-                        e('Result:')
-                        e(asorted);
-                        e();
-                    }
-                    
-                    // show stats and sanity check
-                    e('Time Taken = ' + tms.toString() + ' (ms)', 'strong');
-                    e('Sanity Check: Result is <strong>' + (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED') + '</strong>', 'i');
-                    e();
-                    */
                 }, sortingFunction, asorted);
             }
             
