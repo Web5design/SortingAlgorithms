@@ -168,5 +168,6 @@
         // in-place
         return a;
     };
+    Sort.StatisticalSort.reference = "#A Custom Algorithm";
     
 })(Sort);

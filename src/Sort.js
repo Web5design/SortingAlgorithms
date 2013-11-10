@@ -161,21 +161,28 @@
     
     // check whether an array of numbers is sorted
     // used to check algorithm validity under different cases
-    Sort.isSorted = function(a) {
+    Sort.isSorted = function(a, strict) {
         var N=a.length, i, x, s, fs, tie;
         
         // already sorted
         if (N<=1) return true;
         
+        strict = strict || false;
+        
         x = a[1]-a[0];
         fs = x ? (x < 0 ? -1 : 1) : 0;
         tie = (0==fs) ? true : false;
+        
+        // only ascending sorting checked
+        if (strict && fs < 0) return false;
+        
         for (i=1; i<N; i++)
         {
             x = a[i]-a[i-1];
             s = x ? (x < 0 ? -1 : 1) : 0;
             if (tie && s) { fs = s; tie = false; }
-            if (s && (s !== fs))  return false;
+            if (strict && s < 0)  return false;
+            else if (s && (s !== fs))  return false;
         }
         return true;
     };

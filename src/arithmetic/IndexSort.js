@@ -79,9 +79,9 @@
                 dupls[ai]++; 
             }
         }
-            
         // in-place
         return a;
     };
+    Sort.IndexSort.reference = "#A Custom Algorithm";
     
 })(Sort);

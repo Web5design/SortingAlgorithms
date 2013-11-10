@@ -210,7 +210,7 @@
                         ,'MergeSort'
                         ,'RecursiveQuickSort'
                         ,'QuickSort'
-                        //,'TimSort'
+                        ,'TimSort'
                     ],
                     'Arithmetic-based:' : [
                         'CountingSort'
@@ -277,7 +277,7 @@
             // some extra custom array methods used in the tests
             Array.prototype.nsort = function() { return this.sort($S.utils.asNumbers); }
             Array.prototype.shuffle = function() { return $S.Shuffle(this); }
-            Array.prototype.isSorted = function() { return $S.isSorted(this); }
+            Array.prototype.isSorted = function() { return $S.isSorted(this, true); }
             Array.prototype.toString = function() { return '[ ' + this.join(', ') + ' ]'; }
                 
             // templates defined in the dom
