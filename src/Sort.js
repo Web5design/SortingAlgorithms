@@ -181,6 +181,12 @@
     
     function asNumbers(a,b) { return a - b; }
     
+    Sort.utils.Constant = function(N, c) { 
+        var a = new Array(N); 
+        while(N--) a[N] = c||0;  
+        return a; 
+    };
+    
     Sort.utils.Range = function(N) { 
         var a = new Array(N); 
         while(N--) a[N] = N;  

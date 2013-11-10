@@ -227,6 +227,7 @@
                     ,'random-equidistant'
                     ,'random-equidistributable'
                     ,'random-dynamic-range'
+                    ,'constant'
                 ], data_type_select,
                 
                 sort_type = [
@@ -291,7 +292,12 @@
                 //
                 var m, M, inc, cut;
                 
-                if ('integer-equidistant'==dtype)
+                if ('constant'==dtype)
+                {
+                    m = RF(0, 100);
+                    a = $S.utils.Constant(N, m);
+                }
+                else if ('integer-equidistant'==dtype)
                 {
                     m = RI(0, 100);
                     M = RI(1000, 10000);
