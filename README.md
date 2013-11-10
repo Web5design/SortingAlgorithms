@@ -1,7 +1,7 @@
 SortingAlgorithms
 =================
 
-__Various sorting algorithms implementations in JavaScript  (IN PROGRESS, do not use)__
+__Various sorting algorithms implementations in JavaScript  (IN PROGRESS)__
 
 ![screenshot](/test/screenshot.png)
 
