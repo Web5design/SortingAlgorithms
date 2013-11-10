@@ -1,5 +1,5 @@
-SortingAlgorithms
-=================
+Sorting Algorithms
+===================
 
 __Various sorting algorithms implementations in JavaScript  (IN PROGRESS)__
 
