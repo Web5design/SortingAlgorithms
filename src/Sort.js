@@ -180,11 +180,12 @@
         return true;
     };
     
-    function asNumbers(a,b) { return a - b; }
+    Sort.utils.asNumbers = function(a,b) { return a - b; };
     
     Sort.utils.Constant = function(N, c) { 
         var a = new Array(N); 
-        while(N--) a[N] = c||0;  
+        c = c||0;
+        while(N--) a[N] = c;  
         return a; 
     };
     
@@ -195,8 +196,8 @@
     };
     
     Sort.utils.ReverseRange = function(N) { 
-        var a = new Array(N), i = -1; 
-        while(++i<N) a[i] = N-i-1;  
+        var a = new Array(N), i = N; 
+        while(i--) a[i] = N-1-i;  
         return a; 
     };
     
@@ -216,7 +217,8 @@
         {
             a[i] = RNDI(m, M);
         }
-        return a.sort(asNumbers);
+        //a.sort(asNumbers);
+        return a;
     };
     
     Sort.utils.RandomEquidistributable = function(N, m, M) {
@@ -225,7 +227,8 @@
         {
             a[i] = RNDF(m, M);
         }
-        return a.sort(asNumbers);
+        //a.sort(asNumbers);
+        return a;
     };
     
     Sort.utils.IntegerDynamicRange = function(N, m, M, rangeInc, numCuts) {
@@ -241,7 +244,8 @@
             }
             k++;
         }
-        return a.sort(asNumbers);
+        //a.sort(asNumbers);
+        return a;
     };
     
     Sort.utils.RandomDynamicRange = function(N, m, M, rangeInc, numCuts) {
@@ -257,7 +261,8 @@
             }
             k++;
         }
-        return a.sort(asNumbers);
+        //a.sort(asNumbers);
+        return a;
     };
     
     // this is a shuffling algorithm

@@ -136,6 +136,11 @@
             <br /><br />
             Reference Link: <a href="<% $reflink %>" target="_blank"><% $reflink %></a>
             <br /><br />
+            <% $result %>
+            <br /><br />
+        </script>
+        
+        <script type="text/html-contemplate-tpl" id="result-tpl">
             <% %if ($showData) %>
             Original: <% $a %>
             <br />
@@ -146,7 +151,6 @@
             <strong>Time Taken = <% $tms %> (ms)</strong>
             <br /><br />
             <i>Reality Check:</i> Result is <strong><% $SORTED %></strong>
-            <br /><br />
         </script>
         <!-- end templates used -->
         
@@ -265,13 +269,15 @@
             ;
                 
             // some extra custom array methods used in the tests
-            Array.prototype.toString=function() { return '[ ' + this.join(', ') + ' ]'; }
-            Array.prototype.isSorted=function() { return $S.isSorted(this); }
-            Array.prototype.shuffle=function() { return $S.Shuffle(this); }
+            Array.prototype.nsort = function() { return this.sort($S.utils.asNumbers); }
+            Array.prototype.shuffle = function() { return $S.Shuffle(this); }
+            Array.prototype.isSorted = function() { return $S.isSorted(this); }
+            Array.prototype.toString = function() { return '[ ' + this.join(', ') + ' ]'; }
                 
             // templates defined in the dom
             Contemplate.add({
                 'controls' : '#controls-tpl',
+                'result' : '#result-tpl',
                 'output': '#output-tpl'
             });
             
@@ -296,53 +302,11 @@
             sort_type_select = U.ID('sort-type-select');
             data_type_select = U.ID('data-type-select');
             
-            // test routine
-            function doTest()
+            // prepare test data
+            function prepareTestData($S, N, dtype, stype)
             {
-                //
-                // get selected sorting algorithm
-                //
-                var selectedAlgorithm, sortingFunction,  reflink, 
-                    stype, dtype, N, a, asorted, extra_args = null,
-                    m, M, inc, cut
-                ;
+                var a, m, M, inc, cut;
                 
-                N = data_size[size_select.selectedIndex];
-                
-                stype = sort_type[sort_type_select.selectedIndex];
-                
-                dtype = data_type_select.options[data_type_select.selectedIndex].value; //data_type[data_type_select.selectedIndex];
-                
-                selectedAlgorithm = sort_select.options[sort_select.selectedIndex].value; //sort_algos[sort_select.selectedIndex];
-                if ('BucketSort with QuickSort'==selectedAlgorithm)
-                {
-                    selectedAlgorithm = 'BucketSort';
-                    extra_args = $S.QuickSort;
-                }
-                else if ('BucketSort with IndexSort'==selectedAlgorithm)
-                {
-                    selectedAlgorithm = 'BucketSort';
-                    extra_args = $S.IndexSort;
-                }
-                else if (0==selectedAlgorithm.indexOf('IndexSort'))
-                {
-                    selectedAlgorithm = 'IndexSort';
-                }
-                else if ('StatisticalSort with QuickSort'==selectedAlgorithm)
-                {
-                    selectedAlgorithm = 'StatisticalSort';
-                    extra_args = $S.QuickSort;
-                }
-                else if (0==selectedAlgorithm.indexOf('StatisticalSort'))
-                {
-                    selectedAlgorithm = 'StatisticalSort';
-                }
-                sortingFunction = $S[selectedAlgorithm];
-                reflink = sortingFunction.reference || '#';
-                
-                //
-                // prepare test data
-                //
                 if ('constant'==dtype)
                 {
                     m = RF(0, 100);
@@ -397,6 +361,18 @@
                 }
                 
                 
+                if (
+                    ('integer-equidistributable'==dtype ||
+                    'random-equidistributable'==dtype || 
+                    'integer-dynamic-range'==dtype || 
+                    'random-dynamic-range'==dtype)
+                        && 
+                    ('already-sorted'==stype || 'reverse-sorted'==stype)
+                )
+                {
+                    a.nsort();
+                }
+                
                 // reverse-sorted
                 if ('reverse-sorted'==stype)
                 {
@@ -410,11 +386,73 @@
                 // sorted, leave as is
                 else { }
                 
+                return a;
+            }
+            
+            // test routine
+            function doTest()
+            {
+                //
+                // get selected sorting algorithm
+                //
+                var selectedAlgorithm, sortingFunction,  reflink, 
+                    stype, dtype, N, a, asorted, extra_args = null
+                ;
+                
+                N = data_size[size_select.selectedIndex];
+                
+                stype = sort_type[sort_type_select.selectedIndex];
+                
+                dtype = data_type_select.options[data_type_select.selectedIndex].value; //data_type[data_type_select.selectedIndex];
+                
+                selectedAlgorithm = sort_select.options[sort_select.selectedIndex].value; //sort_algos[sort_select.selectedIndex];
+                if ('BucketSort with QuickSort'==selectedAlgorithm)
+                {
+                    selectedAlgorithm = 'BucketSort';
+                    extra_args = $S.QuickSort;
+                }
+                else if ('BucketSort with IndexSort'==selectedAlgorithm)
+                {
+                    selectedAlgorithm = 'BucketSort';
+                    extra_args = $S.IndexSort;
+                }
+                else if (0==selectedAlgorithm.indexOf('IndexSort'))
+                {
+                    selectedAlgorithm = 'IndexSort';
+                }
+                else if ('StatisticalSort with QuickSort'==selectedAlgorithm)
+                {
+                    selectedAlgorithm = 'StatisticalSort';
+                    extra_args = $S.QuickSort;
+                }
+                else if (0==selectedAlgorithm.indexOf('StatisticalSort'))
+                {
+                    selectedAlgorithm = 'StatisticalSort';
+                }
+                sortingFunction = $S[selectedAlgorithm];
+                reflink = sortingFunction.reference || '#';
+                
+                //
+                // prepare test data
+                //
+                a = prepareTestData($S, N, dtype, stype);
                 
                 //
                 // do the sort test
                 //
                 asorted = a.slice();
+                
+                //
+                // show loader
+                //
+                con.Html( 
+                    Contemplate.tpl( 'output', {
+                        selectedAlgorithm : selectedAlgorithm,
+                        reflink : reflink,
+                        // show loader
+                        result : '<img src="css/ajax-loader.gif" />'
+                    } ) 
+                );
                 
                 if (extra_args)
                 {
@@ -427,11 +465,13 @@
                             Contemplate.tpl( 'output', {
                                 selectedAlgorithm : selectedAlgorithm,
                                 reflink : reflink,
-                                showData : (N<50),
-                                a : a,
-                                asorted : asorted,
-                                tms : tms,
-                                SORTED : (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED')
+                                result : Contemplate.tpl('result', {
+                                    showData : (N<50),
+                                    a : a,
+                                    asorted : asorted,
+                                    tms : tms,
+                                    SORTED : (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED')
+                                })
                             } ) 
                         );
                         
@@ -448,11 +488,13 @@
                             Contemplate.tpl( 'output', {
                                 selectedAlgorithm : selectedAlgorithm,
                                 reflink : reflink,
-                                showData : (N<50),
-                                a : a,
-                                asorted : asorted,
-                                tms : tms,
-                                SORTED : (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED')
+                                result : Contemplate.tpl('result', {
+                                    showData : (N<50),
+                                    a : a,
+                                    asorted : asorted,
+                                    tms : tms,
+                                    SORTED : (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED')
+                                })
                             } ) 
                         );
                         
