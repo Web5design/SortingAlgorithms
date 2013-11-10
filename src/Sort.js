@@ -179,6 +179,8 @@
         return true;
     };
     
+    function asNumbers(a,b) { return a - b; }
+    
     Sort.utils.Range = function(N) { 
         var a = new Array(N); 
         while(N--) a[N] = N;  
@@ -191,9 +193,69 @@
         return a; 
     };
     
+    Sort.utils.Equidistant = function(N, m, M, inc) {
+        var a = new Array(N), i, v=m;
+        for (i=0; i<N; i++)
+        {
+            a[i] = v;
+            v += inc;
+        }
+        return a;
+    };
+    
+    Sort.utils.IntegerEquidistributable = function(N, m, M) {
+        var a = new Array(N), i;
+        for (i=0; i<N; i++)
+        {
+            a[i] = RNDI(m, M);
+        }
+        return a.sort(asNumbers);
+    };
+    
+    Sort.utils.RandomEquidistributable = function(N, m, M) {
+        var a = new Array(N), i;
+        for (i=0; i<N; i++)
+        {
+            a[i] = RNDF(m, M);
+        }
+        return a.sort(asNumbers);
+    };
+    
+    Sort.utils.IntegerDynamicRange = function(N, m, M, rangeInc, numCuts) {
+        var a = new Array(N), i, k, range=0;
+        k = 0;
+        for (i=0; i<N; i++)
+        {
+            a[i] = RNDI(m, M) + range;
+            if (k>=numCuts)
+            {
+                k = 0;
+                range += rangeInc;
+            }
+            k++;
+        }
+        return a.sort(asNumbers);
+    };
+    
+    Sort.utils.RandomDynamicRange = function(N, m, M, rangeInc, numCuts) {
+        var a = new Array(N), i, k, range=0;
+        k = 0;
+        for (i=0; i<N; i++)
+        {
+            a[i] = RNDF(m, M) + range;
+            if (k>=numCuts)
+            {
+                k = 0;
+                range += rangeInc;
+            }
+            k++;
+        }
+        return a.sort(asNumbers);
+    };
+    
     // this is a shuffling algorithm
     // http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-    Sort.Shuffle = Sort.FisherYatesKnuthShuffle = function(a) {
+    Sort.Shuffle = Sort.utils.FisherYatesKnuthShuffle = function(a) {
         var N=a.length, perm, swap;
         while(N--){ perm=RNDI(0, N); swap=a[N]; a[N]=a[perm]; a[perm]=swap; }   
         // in-place

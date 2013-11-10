@@ -114,6 +114,23 @@
         <script type="text/javascript" src="./js/sort.min.js"></script>
         
         <!-- templates used -->
+        <script type="text/html-contemplate-tpl" id="controls-tpl">
+            <strong>Select Sorting Algorithm: </strong><br />
+            <div class="cont"><% %htmlselect($algo_data, {id=> "sort-select"}) %></div> 
+            
+            <strong>Select Data Size: </strong><br />
+            <div class="cont"><% %htmlselect($size_data, {id=> "size-select"}) %></div> 
+            
+            <strong>Select Data Type: </strong><br />
+            <div class="cont"><% %htmlselect($data_type_data, {id=> "data-type-select"}) %></div> 
+            
+            <strong>Select pre-sort state: </strong><br />
+            <div class="cont"><% %htmlselect($sort_type_data, {id=> "sort-type-select"}) %></div> 
+            
+            <input id="test" type="button" class="button" value="Run Test" />
+            <br /><br />
+        </script>
+        
         <script type="text/html-contemplate-tpl" id="output-tpl">
             <strong>Selected Algorithm: <% $selectedAlgorithm %></strong>
             <br /><br />
@@ -129,23 +146,6 @@
             <strong>Time Taken = <% $tms %> (ms)</strong>
             <br /><br />
             <i>Sanity Check: Result is <strong><% $SORTED %></strong></i>
-            <br /><br />
-        </script>
-        
-        <script type="text/html-contemplate-tpl" id="controls-tpl">
-            <strong>Select Sorting Algorithm: </strong><br />
-            <div class="cont"><% %htmlselect($algo_data, {id: "sort-select"}) %></div> 
-            
-            <strong>Select Data Size: </strong><br />
-            <div class="cont"><% %htmlselect($size_data, {id: "size-select"}) %></div> 
-            
-            <strong>Select Data Type: </strong><br />
-            <div class="cont"><% %htmlselect($data_type_data, {id: "data-type-select"}) %></div> 
-            
-            <strong>Select pre-sort state: </strong><br />
-            <div class="cont"><% %htmlselect($sort_type_data, {id: "sort-type-select"}) %></div> 
-            
-            <input id="test" type="button" class="button" value="Run Test" />
             <br /><br />
         </script>
         <!-- end templates used -->
@@ -199,6 +199,7 @@
                     ,'QuickSort'
                     //,'TimSort'
                     ,'CountingSort'
+                    ,'BucketSort'
                     ,'IndexSort'
                     //,'StatisticalSort'
                 ], sort_select,
@@ -208,14 +209,22 @@
                     ,20
                     ,50
                     ,100
+                    ,200
+                    ,500
                     ,1000
+                    ,2000
+                    ,5000
                     ,10000
+                    ,20000
+                    ,50000
                 ], size_select,
                 
                 data_type = [
                     'integer-range'
+                    ,'integer-equidistant'
                     ,'integer-equidistributable'
                     ,'integer-dynamic-range'
+                    ,'random-equidistant'
                     ,'random-equidistributable'
                     ,'random-dynamic-range'
                 ], data_type_select,
@@ -230,11 +239,9 @@
             ;
                 
             // some extra custom array methods used in the tests
-            function asNumbers(a,b) { return a - b; }
             Array.prototype.toString=function() { return '[ ' + this.join(', ') + ' ]'; }
             Array.prototype.isSorted=function() { return $S.isSorted(this); }
             Array.prototype.shuffle=function() { return $S.Shuffle(this); }
-            Array.prototype.rshort=function() { this.sort().reverse(); return this; }
                 
             // templates defined in the dom
             Contemplate.add({
@@ -282,71 +289,49 @@
                 //
                 // prepare test data
                 //
-                var i, k, m, M, range, rangeInc, cut;
+                var m, M, inc, cut;
                 
-                if ('integer-equidistributable'==dtype)
+                if ('integer-equidistant'==dtype)
                 {
-                    a = new Array(N);
                     m = RI(0, 100);
                     M = RI(1000, 10000);
-                    for (i=0; i<N; i++)
-                    {
-                        a[i] = RI(m, M);
-                    }
-                    a.sort(asNumbers);
+                    inc = RI(1, 500)
+                    a = $S.utils.Equidistant(N, m, M, inc);
+                }
+                else if ('integer-equidistributable'==dtype)
+                {
+                    m = RI(0, 100);
+                    M = RI(1000, 10000);
+                    a = $S.utils.IntegerEquidistributable(N, m, M);
+                }
+                else if ('random-equidistant'==dtype)
+                {
+                    m = RF(0, 100);
+                    M = RF(1000, 10000);
+                    inc = RF(1, 500)
+                    a = $S.utils.Equidistant(N, m, M, inc);
                 }
                 else if ('random-equidistributable'==dtype)
                 {
-                    a = new Array(N);
                     m = RF(0, 100.2);
                     M = RF(1000.1, 10000.3);
-                    for (i=0; i<N; i++)
-                    {
-                        a[i] = RF(m, M);
-                    }
-                    a.sort(asNumbers);
+                    a = $S.utils.RandomEquidistributable(N, m, M);
                 }
                 else if ('integer-dynamic-range'==dtype)
                 {
-                    a = new Array(N);
                     m = RI(0, 100);
                     M = RI(1000, 10000);
-                    range = 0;
-                    rangeInc = RI(100, 500);
+                    inc = RI(100, 5000);
                     cut = ~~(RI(N/8, N/2));
-                    k = 0;
-                    for (i=0; i<N; i++)
-                    {
-                        a[i] = RI(m, M) + range;
-                        if (k>=cut)
-                        {
-                            k = 0;
-                            range+=rangeInc;
-                        }
-                        k++;
-                    }
-                    a.sort(asNumbers);
+                    a = $S.utils.IntegerDynamicRange(N, m, M,inc, cut);
                 }
                 else if ('random-dynamic-range'==dtype)
                 {
-                    a = new Array(N);
                     m = RF(0, 100.3);
                     M = RF(1000.2, 10000.4);
-                    range = 0;
-                    rangeInc = RF(100, 500);
+                    inc = RF(100, 5000);
                     cut = ~~(RI(N/8, N/2));
-                    k = 0;
-                    for (i=0; i<N; i++)
-                    {
-                        a[i] = RF(m, M) + range;
-                        if (k>=cut)
-                        {
-                            k = 0;
-                            range+=rangeInc;
-                        }
-                        k++;
-                    }
-                    a.sort(asNumbers);
+                    a = $S.utils.RandomDynamicRange(N, m, M, inc, cut);
                 }
                 else
                 {

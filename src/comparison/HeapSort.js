@@ -4,6 +4,7 @@
     //  Comparison Algorithms
     //
     
+    // adapted from: https://github.com/mgechev/javascript-algorithms
     // auxilliaries
     var Floor = Math.floor,
 
