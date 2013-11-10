@@ -5,39 +5,7 @@
     //
     
     // auxilliaries
-    var isNone=function(x) { return ((undef===x) || (null===x)); },
-        
-        /*binary_search = function(a, element, start, end) {
-            var mid, m;
-            mid = start + ~~(0.5*(end-start) + 0.5);
-            if (start == end)
-            {
-                if (!isNone(a[mid]) && a[mid] <= element) return (mid + 1);
-                else return mid;
-            }
-            else
-            {
-                m = mid;
-                while (m<end && isNone(a[m])) m++;
-                if (m == end)
-                {
-                    if (!isNone(a[m]) && a[m] <= element) return (m + 1);
-                    else return binary_search(a, element, start, mid);
-                }
-                else if (m == start)
-                {
-                    if (a[m] > element) return m;
-                    else return binary_search(a, element, m+1, end);
-                }
-                else
-                {
-                    if (a[m] == element) return (m + 1);
-                    else if (a[m] > element) return binary_search(a, element, start, m-1);
-                    else return binary_search(a, element, m+1, end);
-                }
-            }
-        },*/
-        
+    var 
         binary_search_iter = function(a, element, start, end) {
             var mid, m;
             while(true)
@@ -46,30 +14,30 @@
                 
                 if (start == end)
                 {
-                    if (!isNone(a[mid]) && a[mid] <= element) return (mid + 1);
+                    if ( null!==a[mid] && a[mid] <= element) return (mid + 1);
                     else return mid;
                 }
                 else
                 {
                     m = mid;
                     
-                    while (m<end && isNone(a[m])) m++;
+                    while (m<end && null===a[m]) m++;
                     
                     if (m == end)
                     {
-                        if (!isNone(a[m]) && a[m] <= element) return (m + 1);
-                        else { end=mid; continue; }
+                        if (null!==a[m] && a[m] <= element) return (m + 1);
+                        else { end = mid; continue; }
                     }
                     else if (m == start)
                     {
                         if (a[m] > element) return m;
-                        else { start=m+1; continue; }
+                        else { start = m+1; continue; }
                     }
                     else
                     {
                         if (a[m] == element) return (m + 1);
-                        else if (a[m] > element) {end=m-1; continue; }
-                        else { start=m+1; continue; }
+                        else if (a[m] > element) {end = m-1; continue; }
+                        else { start = m+1; continue; }
                     }
                 }
             }
@@ -78,18 +46,19 @@
         insert = function(a, element, index, last_insert_index) {
             var t;
             // nonlocal last_insert_index
-            if (isNone(a[index]))
+            if ( null===a[index] )
             {
                 a[index] = element;
             }
             else
             {
-                while ( !isNone(a[index]) )
+                while ( null!==a[index] )
                 {
                     t=a[index]; a[index]=element; element=t;
                     index++;
                 }
-                a[index] = element;  index++;
+                a[index] = element;  
+                index++;
             }
             
             if (index > last_insert_index[0])  last_insert_index[0] = index;
@@ -108,15 +77,15 @@
                 spaces = 0;
                 while (spaces < num_spaces)
                 {
-                    if (!isNone(a[index]))
+                    if ( null!==a[index] )
                     {
                         queue[bottom] = a[index];
                         bottom++;
                     }
-                    a[index] = undef
+                    a[index] = null;
                     index++; spaces++;
                 }    
-                if (!isNone(a[index]))
+                if ( null!==a[index] )
                 {
                     queue[bottom] = a[index];
                     bottom++;
@@ -130,14 +99,19 @@
     
     // http://en.wikipedia.org/wiki/Library_sort
     Sort.LibrarySort = function(a, eps) {
-        var N=a.length, copy, copy_len, last_insert_index, 
+        var N=a.length, copy, copy_len, num_spaces, last_insert_index, 
             inserted, index, round_inserts, insertion_index, i, ai;
         
-        eps=eps||0;
+        eps = eps || 0;
+        num_spaces = ~~(eps*N+0.5);
         
-        copy_len=~~(N*(1+eps)+0.5); copy = new Array(copy_len);
+        copy_len = N + num_spaces; 
+        copy = new Array(copy_len);
+        for (i=0; i<copy_len; i++)  copy[i] = null;
         copy[0] = a[0];
-        last_insert_index=[0];  inserted = index = 1;
+        
+        last_insert_index = [0];  
+        inserted = index = 1;
      
         while (inserted < N)
         {
@@ -146,15 +120,20 @@
             while (inserted < N && round_inserts > 0)
             {
                 insertion_index = binary_search_iter(copy, a[index], 0, last_insert_index[0]);
+                
                 insert(copy, a[index], insertion_index, last_insert_index);
+                
                 round_inserts--; inserted++; index++;
             }
-            balance(copy, eps, inserted, last_insert_index);
+            balance(copy, num_spaces, inserted, last_insert_index);
         }
         
         ai=0;
-        for (i=0; i<copy_len; i++) { if (!isNone(copy[i])) a[ai++]=copy[i]; }
-        
+        for (i=0; i<copy_len; i++) 
+        { 
+            if ( null!==copy[i] ) 
+                a[ ai++ ] = copy[ i ]; 
+        }
         // in-place
         return a;
     };

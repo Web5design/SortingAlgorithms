@@ -2,7 +2,7 @@
 *
 *   Sort.js
 *   Sorting Algorithms implemented in JavaScript
-*   for study and experimentation, in a concise library
+*   in a concise library
 *
 *   @version: 0.1
 * 
@@ -80,7 +80,7 @@
     
     This package implements showcases of various (best known) sorting algorithms 
     (and a couple of custom ones)
-    for study, experimentation and use in applications
+    for analysis, study, experimentation
     In a concice library
     
     https://github.com/foo123/SortingAlgorithms

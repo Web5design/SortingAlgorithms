@@ -205,7 +205,7 @@
                         ,'ShellSort'
                         ,'HeapSort'
                         ,'InsertionSort'
-                        //,'LibrarySort'
+                        ,'LibrarySort'
                         ,'RecursiveMergeSort'
                         ,'MergeSort'
                         ,'RecursiveQuickSort'
@@ -247,13 +247,13 @@
                 size_options = { id: "size-select" },
                 
                 data_type = {
-                    'Integers' : [
+                    'Integers:' : [
                         'integer-range'
                         ,'integer-equidistant'
                         ,'integer-uniform'
                         ,'integer-dynamic-range'
                     ],
-                    'General' :[
+                    'Arbitrary:' :[
                         'random-equidistant'
                         ,'random-uniform'
                         ,'random-dynamic-range'
@@ -261,7 +261,7 @@
                     ]
                 }, 
                 data_type_select,
-                data_type_options = { id: "data-type-select", optgroups: ['Integers', 'General'], use_value : true },
+                data_type_options = { id: "data-type-select", optgroups: ['Integers:', 'Arbitrary:'], use_value : true },
                 
                 sort_type = [
                     'already-sorted'

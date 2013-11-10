@@ -142,8 +142,6 @@
             }
             CDF = null;   // delete it now
             
-            //log(ranges);
-            
             offset = 0;
             for (i=0; i<N; i++)
             {

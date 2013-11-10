@@ -28,7 +28,7 @@
             // initialize each array cell to zero ; THEN
             
             for (i=0; i<N; i++)
-                count[a[i]]++;
+                count[~~a[i]]++;
              
             // calculate starting index for each key:
             total = 0;
@@ -45,8 +45,8 @@
             for (i=0; i<N; i++)
             {
                 key = aclone[i];
-                a[count[key]] = key;
-                count[key]++;
+                a[count[~~key]] = key;
+                count[~~key]++;
             }
         }
         
