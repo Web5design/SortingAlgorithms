@@ -48,6 +48,12 @@
                 width:80%;
             }
             
+            #output-result {
+                min-width:20px;
+                min-height:20px;
+                background: url(css/ajax-loader.gif) 0 0 no-repeat;
+            }
+            
             #panel > div {
                 vertical-align:top;
             }
@@ -109,7 +115,7 @@
             }
         </style>
         
-        <script type="text/javascript" src="./js/utils.js"></script>
+        <script type="text/javascript" src="./js/utils.min.js"></script>
         <script type="text/javascript" src="./js/Contemplate.min.js"></script>
         <script type="text/javascript" src="./js/sort.min.js"></script>
         
@@ -136,7 +142,7 @@
             <br /><br />
             Reference Link: <a href="<% $reflink %>" target="_blank"><% $reflink %></a>
             <br /><br />
-            <% $result %>
+            <div id="output-result"></div>
             <br /><br />
         </script>
         
@@ -192,7 +198,7 @@
             var $S = Sort,  RI = $S.utils.RandomInteger,  RF = $S.utils.RandomFloat,
 
                 sort_algos = {
-                    'Comparison' : [
+                    'Comparison-based:' : [
                         'BuiltinSort'
                         ,'BubbleSort'
                         ,'CocktailSort'
@@ -206,7 +212,7 @@
                         ,'QuickSort'
                         //,'TimSort'
                     ],
-                    'Arithmetic' : [
+                    'Arithmetic-based:' : [
                         'CountingSort'
                         ,'IndexSort (custom)'
                         ,'BucketSort'
@@ -218,7 +224,7 @@
                     ]
                 }, 
                 sort_select,
-                sort_algos_options = { id: "sort-select", optgroups : ['Comparison', 'Arithmetic'], use_value : true },
+                sort_algos_options = { id: "sort-select", optgroups : ['Comparison-based:', 'Arithmetic-based:'], use_value : true },
                 
                 data_size = [
                     5
@@ -244,12 +250,12 @@
                     'Integers' : [
                         'integer-range'
                         ,'integer-equidistant'
-                        ,'integer-equidistributable'
+                        ,'integer-uniform'
                         ,'integer-dynamic-range'
                     ],
                     'General' :[
                         'random-equidistant'
-                        ,'random-equidistributable'
+                        ,'random-uniform'
                         ,'random-dynamic-range'
                         ,'constant'
                     ]
@@ -319,7 +325,7 @@
                     inc = RI(1, 500)
                     a = $S.utils.Equidistant(N, m, M, inc);
                 }
-                else if ('integer-equidistributable'==dtype)
+                else if ('integer-uniform'==dtype)
                 {
                     m = RI(0, 100);
                     M = RI(1000, 10000);
@@ -332,7 +338,7 @@
                     inc = RF(1, 500)
                     a = $S.utils.Equidistant(N, m, M, inc);
                 }
-                else if ('random-equidistributable'==dtype)
+                else if ('random-uniform'==dtype)
                 {
                     m = RF(0, 100.2);
                     M = RF(1000.1, 10000.3);
@@ -433,26 +439,26 @@
                 reflink = sortingFunction.reference || '#';
                 
                 //
-                // prepare test data
-                //
-                a = prepareTestData($S, N, dtype, stype);
-                
-                //
-                // do the sort test
-                //
-                asorted = a.slice();
-                
-                //
                 // show loader
                 //
                 con.Html( 
                     Contemplate.tpl( 'output', {
                         selectedAlgorithm : selectedAlgorithm,
-                        reflink : reflink,
-                        // show loader
-                        result : '<img src="css/ajax-loader.gif" />'
+                        reflink : reflink
                     } ) 
                 );
+                
+                var result = U.Get('output-result');
+                
+                //
+                // prepare test data
+                //
+                a = prepareTestData($S, N, dtype, stype);
+                
+                //
+                // do the sorting test
+                //
+                asorted = a.slice();
                 
                 if (extra_args)
                 {
@@ -461,18 +467,14 @@
                         //
                         // show results
                         //
-                        con.Html( 
-                            Contemplate.tpl( 'output', {
-                                selectedAlgorithm : selectedAlgorithm,
-                                reflink : reflink,
-                                result : Contemplate.tpl('result', {
-                                    showData : (N<50),
-                                    a : a,
-                                    asorted : asorted,
-                                    tms : tms,
-                                    SORTED : (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED')
-                                })
-                            } ) 
+                        result.Style('background', 'none').Html(
+                            Contemplate.tpl('result', {
+                                showData : (N<50),
+                                a : a,
+                                asorted : asorted,
+                                tms : tms,
+                                SORTED : (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED')
+                            })
                         );
                         
                     }, sortingFunction, asorted, extra_args);
@@ -484,18 +486,14 @@
                         //
                         // show results
                         //
-                        con.Html( 
-                            Contemplate.tpl( 'output', {
-                                selectedAlgorithm : selectedAlgorithm,
-                                reflink : reflink,
-                                result : Contemplate.tpl('result', {
-                                    showData : (N<50),
-                                    a : a,
-                                    asorted : asorted,
-                                    tms : tms,
-                                    SORTED : (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED')
-                                })
-                            } ) 
+                        result.Style('background', 'none').Html(
+                            Contemplate.tpl('result', {
+                                showData : (N<50),
+                                a : a,
+                                asorted : asorted,
+                                tms : tms,
+                                SORTED : (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED')
+                            })
                         );
                         
                     }, sortingFunction, asorted);

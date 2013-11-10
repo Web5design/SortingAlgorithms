@@ -5,26 +5,26 @@
     //
     
     // auxilliaries
-    var log = console.log;
     var splice = Array.prototype.splice,
-        Min = Math.min, Log = Math.log, Log2 = Log(2),
+        Min = Math.min, 
         
         Merge = function(a, left, middle, right) {
             // need at least 2 elements to merge
-            if (right>left)
+            if (right > left)
             {
-                var merged = new Array(), l = left, r = middle+1;
+                var mL = right-left+1, merged = new Array(mL), 
+                    m = 0, l = left, r = middle+1;
                 
                 // merge
                 while (l<=middle && r<=right) 
-                    merged.push( ( a[l]<=a[r] ) ? a[ l++ ] : a[ r++ ] );
+                    merged[ m++ ] = ( a[ l ] <= a[ r ] ) ? a[ l++ ] : a[ r++ ];
                 while (l<=middle) 
-                    merged.push( a[ l++ ] );
+                    merged[ m++ ] = a[ l++ ];
                 while (r<=right) 
-                    merged.push( a[ r++ ] );
+                    merged[ m++ ] = a[ r++ ];
                 
                 // move the merged back to the a array
-                splice.apply(a, [left, merged.length].concat(merged));
+                splice.apply(a, [left, mL].concat(merged));
             }
             return a;
         }
@@ -51,7 +51,6 @@
             // 2. CONQUER Part...
             Merge(a, left, middle-1, right);
         }
-        
         // in-place
         return a;
     };
@@ -60,27 +59,27 @@
     // http://en.wikipedia.org/wiki/Merge_sort
     // http://www.sinbadsoft.com/blog/a-recursive-and-iterative-merge-sort-implementations/
     // http://java.dzone.com/articles/recursive-and-iterative-merge
-    Sort.MergeSort = Sort.IterativeMergeSort = function(a) {
+    Sort.MergeSort = function(a) {
         var N=a.length;
         
         if (N>1)
         {
-            var logN = ~~(Log(N)/Log2)+1, i, j, size=1, halfSize=0, off;
-            for (i=1; i<=logN; i++)
+            var logN = N,
+                j, n, size = 1, size2 = 2
+                ;
+            
+            while (logN)
             {
-                halfSize = size;
-                size <<= 1;
+                n = N-size;
+                for (j=0; j<n; j+=size2) 
+                    Merge(a, j, j+size-1, Min(j+size2-1, N-1));
                 
-                for (j=0; j<N; j+=size) 
-                {
-                    off = j; //(j) ? j+1 : j;
-                    Merge(a, off, off+halfSize, Min(off+size, N-1));
-                    log([off, off+halfSize, Min(off+size, N-1)]);
-                    log(a);
-                }
+                size <<= 1;
+                size2 <<= 1;
+                
+                logN >>= 1;
             }
         }
-        
         // in-place
         return a;
     };

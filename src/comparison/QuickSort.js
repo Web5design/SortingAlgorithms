@@ -57,7 +57,7 @@
     Sort.RecursiveQuickSort.reference = "http://en.wikipedia.org/wiki/Quicksort";
     
     // http://www.geeksforgeeks.org/iterative-quick-sort/
-    Sort.QuickSort = Sort.IterativeQuickSort = function(a, left, right) {
+    Sort.QuickSort = function(a, left, right) {
         if (undef===left && undef===right) { left=0; right=a.length-1; }
         
         // If the list has 2 or more items

@@ -10,24 +10,21 @@
 ./src/Sort.js
 
 ### Comparison-Based Algorithms ###
+./src/comparison/BuiltinSort.js
+
 ./src/comparison/BubbleSort.js
 ./src/comparison/CocktailSort.js
 ./src/comparison/ShellSort.js
 ./src/comparison/HeapSort.js
 ./src/comparison/InsertionSort.js
+./src/comparison/MergeSort.js
+./src/comparison/QuickSort.js
 
 # !!does not work correctly yet!!
 ./src/comparison/LibrarySort.js
 
-# !!does not work correctly yet!!
-./src/comparison/MergeSort.js
-
-./src/comparison/QuickSort.js
-
 # !!not implemented yet!!
 ./src/comparison/TimSort.js
-
-./src/comparison/BuiltinSort.js
 
 ### Number/Count-Based Algorithms ###
 # almost ready
