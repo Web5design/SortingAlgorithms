@@ -26,7 +26,6 @@
                 N = newN;
             }while (N > 0);
         }
-        
         // in-place
         return a;
     };

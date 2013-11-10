@@ -36,30 +36,6 @@
         }
     ;
     
-    // http://en.wikipedia.org/wiki/Quicksort
-    /*var RecursiveQuickSortOutOfPlace = Sort.RecursiveQuickSortOutOfPlace = function(a) {
-        var N=a.length, left, right, i, pivot, pivotIndex, x;
-
-        // an array of zero or one elements is already sorted
-        if (N <= 1) return a.slice();
-        
-        //select and remove a pivot element pivot from 'array'  // see '#Choice of pivot' below
-        pivotIndex = ~~(0.5*N);   pivot = a[pivotIndex];  
-
-        left=new Array(); right=new Array();
-        for (i=0; i<N; i++)
-        {
-            if (i==pivotIndex) continue;
-            x=a[i];
-            if (x <= pivot) left.push(x);
-            else right.push(x);
-        }
-        // two recursive calls
-        
-        // not in-place
-        return RecursiveQuickSortOutOfPlace(left).concat([pivot], RecursiveQuickSortOutOfPlace(right));
-    };*/
-    
     var RecursiveQuickSort = Sort.RecursiveQuickSort = function(a, left, right)  {
         if (undef===left && undef===right) { left=0; right=a.length-1; }
         
@@ -75,10 +51,10 @@
             // Recursively sort elements at least as big as the pivot
             RecursiveQuickSort(a, pivotNewIndex + 1, right);
         }
-        
         // in-place
         return a;
     };
+    Sort.RecursiveQuickSort.reference = "http://en.wikipedia.org/wiki/Quicksort";
     
     // http://www.geeksforgeeks.org/iterative-quick-sort/
     Sort.QuickSort = Sort.IterativeQuickSort = function(a, left, right) {
@@ -89,9 +65,9 @@
         {
             var stack, top, N, p;
         
-            N=right - left + 1;
+            N = right - left + 1;
             // Create an auxiliary stack
-            stack=new Array(N);
+            stack = new Array(N);
             // initialize top of stack
             top = -1;
          
@@ -126,7 +102,6 @@
                 }
             }
         }
-        
         // in-place
         return a;
     };

@@ -5,62 +5,26 @@
     //
     
     // auxilliaries
-    var
-        splice=Array.prototype.splice,
-        Min=Math.min,
-        /*MergeCopy = function(left, right) {
-            var merged=new Array(), cl=left.length, cr=right.length;
-            
-            // assign the element of the sublists to 'result' variable until there is no element to merge. 
-            while (cl>0 && cr>0)
-            {
-               // compare the first two element, which is the small one, of each two sublists.
-                if (left[0] <= right[0])
-                {
-                    // the small element is copied to 'result' variable.
-                    // delete the copied one(a first element) in the sublist.
-                    merged.push(left.shift());  cl--;
-                }
-                else
-                {
-                    // same operation as the above(in the right sublist).
-                    merged.push(right.shift()); cr--;
-                }
-            }
-            // copy all of remaining elements from the sublist to 'result' variable, when there is no more element to compare with.
-            //while (cl>0) { merged.push(left.shift()); cl--; }
-            // same operation as the above(in the right sublist).
-            //while (cr>0) { merged.push(right.shift()); cr--; }
-            if (cl>0) merged=merged.concat(left);
-            else if (cr>0) merged=merged.concat(right);
-            // return the result of the merged sublists(or completed one, finally).
-            // the length of the left and right sublists will grow bigger and bigger, after the next call of this function.
-            return merged;
-        },*/
+    var log = console.log;
+    var splice = Array.prototype.splice,
+        Min = Math.min, Log = Math.log, Log2 = Log(2),
         
-        Merge = function(a, left, middle, right/*, offset*/) {
-            var merged, m, l, r, rl, ll, ml, args;
-            // workaround needed by discrepancy 
-            // between recursive and iterative versions
-            offset=1; //(offset) ? 1 : 0;
-            ml=right-left+offset;
+        Merge = function(a, left, middle, right) {
             // need at least 2 elements to merge
-            if (ml>1)
+            if (right>left)
             {
-                merged = new Array(ml);
-                rl=right-middle+offset; ll=middle-left+offset; 
-                l = r = m = 0; 
+                var merged = new Array(), l = left, r = middle+1;
                 
                 // merge
-                while (l<ll && r<rl) merged[m++]=(a[left+l]<=a[middle+r]) ? a[left + l++] : a[middle + r++];
-                //while (r<rl) merged[m++]=a[middle + r++];
-                //while (l<ll) merged[m++]=a[left + l++];
-                if (r<rl) { args=[m, rl-r+1].concat(a.slice(middle+r, middle+rl));  splice.apply(merged, args); }
-                else if (l<ll) { args=[m, ll-l+1].concat(a.slice(left+l, left+ll)); splice.apply(merged, args); }
+                while (l<=middle && r<=right) 
+                    merged.push( ( a[l]<=a[r] ) ? a[ l++ ] : a[ r++ ] );
+                while (l<=middle) 
+                    merged.push( a[ l++ ] );
+                while (r<=right) 
+                    merged.push( a[ r++ ] );
                 
                 // move the merged back to the a array
-                //while (ml--) a[left+ml]=merged[ml];
-                args=[left, ml].concat(merged); splice.apply(a, args);            
+                splice.apply(a, [left, merged.length].concat(merged));
             }
             return a;
         }
@@ -85,12 +49,13 @@
             // merge the sublists returned from prior calls to merge_sort()
             // and return the resulting merged sublist
             // 2. CONQUER Part...
-            Merge(a, left, middle, right, 1);
+            Merge(a, left, middle-1, right);
         }
         
         // in-place
         return a;
     };
+    Sort.RecursiveMergeSort.reference = "http://en.wikipedia.org/wiki/Merge_sort";
     
     // http://en.wikipedia.org/wiki/Merge_sort
     // http://www.sinbadsoft.com/blog/a-recursive-and-iterative-merge-sort-implementations/
@@ -100,11 +65,19 @@
         
         if (N>1)
         {
-            var i, j, halfN=~~(0.5*N)+1;
-            for (i=1; i<=halfN+2; i<<=1)
+            var logN = ~~(Log(N)/Log2)+1, i, j, size=1, halfSize=0, off;
+            for (i=1; i<=logN; i++)
             {
-                for (j=i; j<N; j+=(i<<1)) 
-                    Merge(a, j-i, j, Min(j+i, N)-1, 1);
+                halfSize = size;
+                size <<= 1;
+                
+                for (j=0; j<N; j+=size) 
+                {
+                    off = j; //(j) ? j+1 : j;
+                    Merge(a, off, off+halfSize, Min(off+size, N-1));
+                    log([off, off+halfSize, Min(off+size, N-1)]);
+                    log(a);
+                }
             }
         }
         

@@ -32,7 +32,6 @@
                 // A[0..i] are now in sorted order
             }
         }
-        
         // in-place
         return a;
     };

@@ -116,16 +116,16 @@
         <!-- templates used -->
         <script type="text/html-contemplate-tpl" id="controls-tpl">
             <strong>Select Sorting Algorithm: </strong><br />
-            <div class="cont"><% %htmlselect($algo_data, {id=> "sort-select"}) %></div> 
+            <div class="cont"><% %htmlselect($algo_data, $algo_options) %></div> 
             
             <strong>Select Data Size: </strong><br />
-            <div class="cont"><% %htmlselect($size_data, {id=> "size-select"}) %></div> 
+            <div class="cont"><% %htmlselect($size_data, $size_options) %></div> 
             
             <strong>Select Data Type: </strong><br />
-            <div class="cont"><% %htmlselect($data_type_data, {id=> "data-type-select"}) %></div> 
+            <div class="cont"><% %htmlselect($data_type_data, $data_type_options) %></div> 
             
             <strong>Select pre-sort state: </strong><br />
-            <div class="cont"><% %htmlselect($sort_type_data, {id=> "sort-type-select"}) %></div> 
+            <div class="cont"><% %htmlselect($sort_type_data, $sort_type_options) %></div> 
             
             <input id="test" type="button" class="button" value="Run Test" />
             <br /><br />
@@ -145,7 +145,7 @@
             <% %endif() %>
             <strong>Time Taken = <% $tms %> (ms)</strong>
             <br /><br />
-            <i>Sanity Check: Result is <strong><% $SORTED %></strong></i>
+            <i>Reality Check:</i> Result is <strong><% $SORTED %></strong>
             <br /><br />
         </script>
         <!-- end templates used -->
@@ -187,25 +187,38 @@
             
             var $S = Sort,  RI = $S.utils.RandomInteger,  RF = $S.utils.RandomFloat,
 
-                sort_algos = [
-                    'BuiltinSort'
-                    ,'BubbleSort'
-                    ,'CocktailSort'
-                    ,'ShellSort'
-                    ,'HeapSort'
-                    ,'InsertionSort'
-                    //,'LibrarySort'
-                    //,'MergeSort'
-                    ,'QuickSort'
-                    //,'TimSort'
-                    ,'CountingSort'
-                    ,'BucketSort'
-                    ,'IndexSort'
-                    //,'StatisticalSort'
-                ], sort_select,
+                sort_algos = {
+                    'Comparison' : [
+                        'BuiltinSort'
+                        ,'BubbleSort'
+                        ,'CocktailSort'
+                        ,'ShellSort'
+                        ,'HeapSort'
+                        ,'InsertionSort'
+                        //,'LibrarySort'
+                        ,'RecursiveMergeSort'
+                        ,'MergeSort'
+                        ,'RecursiveQuickSort'
+                        ,'QuickSort'
+                        //,'TimSort'
+                    ],
+                    'Arithmetic' : [
+                        'CountingSort'
+                        ,'IndexSort (custom)'
+                        ,'BucketSort'
+                        ,'BucketSort with QuickSort'
+                        ,'BucketSort with IndexSort'
+                        ,'StatisticalSort (custom)'
+                        //,'StatisticalSort with IndexSort'
+                        ,'StatisticalSort with QuickSort'
+                    ]
+                }, 
+                sort_select,
+                sort_algos_options = { id: "sort-select", optgroups : ['Comparison', 'Arithmetic'], use_value : true },
                 
                 data_size = [
-                    10
+                    5
+                    ,10
                     ,20
                     ,50
                     ,100
@@ -217,24 +230,36 @@
                     ,10000
                     ,20000
                     ,50000
-                ], size_select,
+                    ,100000
+                    ,200000
+                ], 
+                size_select,
+                size_options = { id: "size-select" },
                 
-                data_type = [
-                    'integer-range'
-                    ,'integer-equidistant'
-                    ,'integer-equidistributable'
-                    ,'integer-dynamic-range'
-                    ,'random-equidistant'
-                    ,'random-equidistributable'
-                    ,'random-dynamic-range'
-                    ,'constant'
-                ], data_type_select,
+                data_type = {
+                    'Integers' : [
+                        'integer-range'
+                        ,'integer-equidistant'
+                        ,'integer-equidistributable'
+                        ,'integer-dynamic-range'
+                    ],
+                    'General' :[
+                        'random-equidistant'
+                        ,'random-equidistributable'
+                        ,'random-dynamic-range'
+                        ,'constant'
+                    ]
+                }, 
+                data_type_select,
+                data_type_options = { id: "data-type-select", optgroups: ['Integers', 'General'], use_value : true },
                 
                 sort_type = [
                     'already-sorted'
                     ,'reverse-sorted'
                     ,'random-shuffled'
-                ], sort_type_select,
+                ], 
+                sort_type_select,
+                sort_type_options = { id: "sort-type-select" },
                 
                 controls = U.Get('controls-container'), con = U.Get('console'), test
             ;
@@ -254,9 +279,13 @@
             controls.Html(
                 Contemplate.tpl('controls', {
                     algo_data : sort_algos,
+                    algo_options : sort_algos_options,
                     size_data : data_size,
+                    size_options : size_options,
                     data_type_data : data_type,
-                    sort_type_data : sort_type
+                    data_type_options : data_type_options,
+                    sort_type_data : sort_type,
+                    sort_type_options : sort_type_options
                 })
             );
             
@@ -274,24 +303,46 @@
                 // get selected sorting algorithm
                 //
                 var selectedAlgorithm, sortingFunction,  reflink, 
-                    stype, dtype, N, a, asorted
+                    stype, dtype, N, a, asorted, extra_args = null,
+                    m, M, inc, cut
                 ;
                 
                 N = data_size[size_select.selectedIndex];
                 
                 stype = sort_type[sort_type_select.selectedIndex];
                 
-                dtype = data_type[data_type_select.selectedIndex];
+                dtype = data_type_select.options[data_type_select.selectedIndex].value; //data_type[data_type_select.selectedIndex];
                 
-                selectedAlgorithm = sort_algos[sort_select.selectedIndex];
+                selectedAlgorithm = sort_select.options[sort_select.selectedIndex].value; //sort_algos[sort_select.selectedIndex];
+                if ('BucketSort with QuickSort'==selectedAlgorithm)
+                {
+                    selectedAlgorithm = 'BucketSort';
+                    extra_args = $S.QuickSort;
+                }
+                else if ('BucketSort with IndexSort'==selectedAlgorithm)
+                {
+                    selectedAlgorithm = 'BucketSort';
+                    extra_args = $S.IndexSort;
+                }
+                else if (0==selectedAlgorithm.indexOf('IndexSort'))
+                {
+                    selectedAlgorithm = 'IndexSort';
+                }
+                else if ('StatisticalSort with QuickSort'==selectedAlgorithm)
+                {
+                    selectedAlgorithm = 'StatisticalSort';
+                    extra_args = $S.QuickSort;
+                }
+                else if (0==selectedAlgorithm.indexOf('StatisticalSort'))
+                {
+                    selectedAlgorithm = 'StatisticalSort';
+                }
                 sortingFunction = $S[selectedAlgorithm];
                 reflink = sortingFunction.reference || '#';
                 
                 //
                 // prepare test data
                 //
-                var m, M, inc, cut;
-                
                 if ('constant'==dtype)
                 {
                     m = RF(0, 100);
@@ -365,24 +416,48 @@
                 //
                 asorted = a.slice();
                 
-                $S.Time(function(tms){
-                
-                    //
-                    // show results
-                    //
-                    con.Html( 
-                        Contemplate.tpl( 'output', {
-                            selectedAlgorithm : selectedAlgorithm,
-                            reflink : reflink,
-                            showData : (N<50),
-                            a : a,
-                            asorted : asorted,
-                            tms : tms,
-                            SORTED : (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED')
-                        } ) 
-                    );
+                if (extra_args)
+                {
+                    $S.Time(function(tms){
                     
-                }, sortingFunction, asorted);
+                        //
+                        // show results
+                        //
+                        con.Html( 
+                            Contemplate.tpl( 'output', {
+                                selectedAlgorithm : selectedAlgorithm,
+                                reflink : reflink,
+                                showData : (N<50),
+                                a : a,
+                                asorted : asorted,
+                                tms : tms,
+                                SORTED : (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED')
+                            } ) 
+                        );
+                        
+                    }, sortingFunction, asorted, extra_args);
+                }
+                else
+                {
+                    $S.Time(function(tms){
+                    
+                        //
+                        // show results
+                        //
+                        con.Html( 
+                            Contemplate.tpl( 'output', {
+                                selectedAlgorithm : selectedAlgorithm,
+                                reflink : reflink,
+                                showData : (N<50),
+                                a : a,
+                                asorted : asorted,
+                                tms : tms,
+                                SORTED : (( asorted.isSorted() ) ? 'SORTED' : 'NOT SORTED')
+                            } ) 
+                        );
+                        
+                    }, sortingFunction, asorted);
+                }
             }
             
             // do test

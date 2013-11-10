@@ -7,6 +7,7 @@
     // adapted from: https://github.com/mgechev/javascript-algorithms
     var 
         Floor = Math.floor,
+        
         /**
          * Insertionsort.
          *
@@ -17,14 +18,14 @@
         insertionSort = function(a) {
             var current, j, i, N=a.length;
             
-            for (i = 1; i < N; i += 1) 
+            for (i=1; i<N; i++) 
             {
                 current = a[i];
                 j = i - 1;
-                while (j >= 0 && current < a[j]) 
+                while (j>=0 && current<a[j]) 
                 {
                     a[j + 1] = a[j];
-                    j -= 1;
+                    j--;
                 }
                 a[j + 1] = current;
             }
@@ -44,12 +45,12 @@
                 currentBucket,
                 current, i,
                 sectorSize = 1 / N;
-            for (i = 0; i < N; i += 1) 
+            for (i=0; i<N; i++) 
             {
                 current = a[i];
                 currentBucket = Floor(current / sectorSize);
                 
-                if (buckets[currentBucket] === undef) 
+                if (!buckets[currentBucket]) 
                     buckets[currentBucket] = [];
                 
                 buckets[currentBucket].push(current);
@@ -64,13 +65,13 @@
          * @param {array} buckets Given buckets
          * @returns {array} buckets Buckets with sorted arrays for each bucket
          */
-        sortBuckets = function(buckets) {
+        sortBuckets = function(buckets, subsort) {
             var i, bL = buckets.length;
             
-            for (i = 0; i < bL; i += 1) 
+            for (i=0; i<bL; i++) 
             {
-                if (buckets[i] !== undef)
-                    insertionSort(buckets[i]);
+                if (buckets[i])
+                    buckets[i] = subsort(buckets[i]);
             }
             return buckets;
         },
@@ -88,32 +89,38 @@
                 currentBucket, 
                 bL=buckets.length, cbL;
                 
-            for (i = 0; i < bL; i += 1) 
+            for (i=0; i<bL; i++) 
             {
                 currentBucket = buckets[i];
-                if (currentBucket !== undef) 
+                if (currentBucket) 
                 {
-                    cbL = currentBucket.length;
-                    for (j = 0; j < cbL; j += 1) 
-                        result.push(currentBucket[j]);
+                    result = result.concat(currentBucket);
+                    /*cbL = currentBucket.length;
+                    for (j=0; j<cbL; j++) 
+                        result.push(currentBucket[j]);*/
                 }
             }
             return result;
-        }
+        },
+        
+        subSort = insertionSort //Sort.InsertionSort
     ;
-
+    
     // for reference
     // http://en.wikipedia.org/wiki/Bucket_sort
     
     // Sorts given array with bucketsort
     // adapted from: https://github.com/mgechev/javascript-algorithms
-    Sort.BucketSort = function(a) {
+    Sort.BucketSort = function(a, subsort) {
         var sorted, buckets, i, N=a.length, isOdd;
+        
+        // allow to choose sub-sorting algorithm
+        subSort = subsort || subSort;
         
         if (N>1)
         {
             buckets = createBuckets(a);
-            sortBuckets(buckets);
+            sortBuckets(buckets, subSort);
             sorted = unionBuckets(buckets);
             
             isOdd = N%2;

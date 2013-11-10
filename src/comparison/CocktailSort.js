@@ -42,7 +42,6 @@
                 }
             }while (swapped);
         }
-        
         // in-place
         return a;
     };

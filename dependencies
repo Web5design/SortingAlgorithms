@@ -30,13 +30,13 @@
 ./src/comparison/BuiltinSort.js
 
 ### Number/Count-Based Algorithms ###
+# almost ready
+./src/arithmetic/IndexSort.js
+
 ./src/arithmetic/CountingSort.js
 ./src/arithmetic/BucketSort.js
 
 # almost ready
-./src/arithmetic/IndexSort.js
-
-# in progress
 ./src/arithmetic/StatisticalSort.js
 
 @  # dummy separator

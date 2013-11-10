@@ -87,11 +87,12 @@
     
     ***********************************************************/
     
-    var Sort = {VERSION: "0.1"};
+    var Sort = { VERSION: "0.1" };
     
     //
     //
     // Typed Arrays Substitute 
+    Sort.Array = Array;
     Sort.Array32F = (typeof Float32Array !== "undefined") ? Float32Array : Array;
     Sort.Array64F = (typeof Float64Array !== "undefined") ? Float64Array : Array;
     Sort.Array8I = (typeof Int8Array !== "undefined") ? Int8Array : Array;
@@ -316,7 +317,7 @@
     
     // time a function process and return the statistic
     Sort.Time = function(callback, processToTime) {
-        var timer, args, ms, delay1=200, delay2=200, d=delay1+delay2;
+        var timer, args, ms, delay1=300, delay2=300, d=delay1+delay2;
         
         if (processToTime)
         {

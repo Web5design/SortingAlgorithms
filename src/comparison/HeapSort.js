@@ -18,7 +18,7 @@
         heapify = function(a, index, heapSize) {
             var left = 2 * index + 1,
                 right = 2 * index + 2,
-                largest = index;
+                largest = index, temp;
          
             if (left < heapSize && a[left] > a[index])
                 largest = left;
@@ -28,7 +28,7 @@
          
             if (largest !== index) 
             {
-                var temp = a[index];
+                temp = a[index];
                 a[index] = a[largest];
                 a[largest] = temp;
                 heapify(a, largest, heapSize);
@@ -43,10 +43,10 @@
          * @returns {array} array Array turned into max heap
          */
         buildMaxHeap = function(a) {
-            var i;
-            for (i = Floor(a.length / 2); i >= 0; i -= 1) 
+            var i, N=a.length;
+            for (i=Floor(N / 2); i>=0; i--) 
             {
-                heapify(a, i, a.length);
+                heapify(a, i, N);
             }
             return a;
         }
@@ -64,15 +64,14 @@
         
         buildMaxHeap(a);
         
-        for (i = a.length - 1; i > 0; i -= 1) 
+        for (i=N-1; i>0; i--) 
         {
             temp = a[0];
             a[0] = a[i];
             a[i] = temp;
-            N -= 1;
+            N--;
             heapify(a, 0, N);
         }
-        
         // in-place
         return a;
     };
