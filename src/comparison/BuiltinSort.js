@@ -4,7 +4,7 @@
     //  Comparison Algorithms
     //
     
-    function asNumbers(a,b) { return a - b; }
+    var asNumbers = Sort.utils.asNumbers;
     
     // default built-in sort algorithm
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
@@ -14,5 +14,6 @@
         return a;
     };
     Sort.BuiltinSort.reference = "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort";
+    Sort.BuiltinSort.description = "This is JavaScript's builtin algorithm, usually a variation of quicksort.";
     
 })(Sort);

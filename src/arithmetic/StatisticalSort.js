@@ -31,31 +31,30 @@
     // which preserves lexical/string ordering
     //
     
-    var Array64F = Sort.Array64F, Array16U = Sort.Array16U, Array32U = Sort.Array32U,
-        splice = Array.prototype.splice,
-        subSort = Sort.IndexSort // Sort.QuickSort
+    //var log = console.log;
+    var Array64F = Sort.Array64F, Array32U = Sort.Array32U,
+        splice = Array.prototype.splice, 
+        Floor = Math.floor, Round = Math.round, Ceil = Math.ceil
     ;
     
-    // custom O(n) algorithm for arbitrary random numbers
-    var StatisticalSort = Sort.StatisticalSort = function(a, subsort) {
-        var N=a.length, isOdd, m, M, sum, norm, i, j,
+    // custom O(n) algorithm for arbitrary random numbers (IN PROGRESS)
+    var StatisticalSort = Sort.StatisticalSort = function(a) {
+        var N = a.length, isOdd,
             sgn, fsgn, tie, isSorted, x,
-            PDF, CDF, indexes, ranges, rangesmap,
-            ai, offset, Ar, Nr
-            ;
+            m, M, norm, norm2, invMm,
+            i, ai
+        ;
         
         // trivial case
         if (N>1)
         {
-            // allow to choose sub-sort algorithm
-            subSort = subsort || subSort;
-            
             isOdd = N%2;
+            
             // calculate some order statistics (effective range)
             m = M = a[0]; 
             x = a[1]-a[0];
             fsgn = x ? (x < 0 ? -1 : 1) : 0;
-            tie = (0==fsgn) ? true : false;
+            tie = (fsgn) ? false : true;
             isSorted = true; // assume already sorted
             for (i=1; i<N; i++) 
             { 
@@ -65,11 +64,11 @@
                     x = a[i]-a[i-1];
                     sgn = x ? (x < 0 ? -1 : 1) : 0;
                     if (tie && sgn) { fsgn = sgn; tie = false; }
-                    if (sgn && (sgn != fsgn))  isSorted = false;
+                    if (sgn&&(sgn-fsgn))  isSorted = false;
                 }
                 // compute min-max range
-                if (a[i]>M) M = a[i]; 
-                else if (a[i]<m) m = a[i];
+                if ( a[i] > M ) M = a[i]; 
+                else if ( a[i] < m ) m = a[i];
             }
             
             // this covers sorted, reverse-sorted and also all duplicates cases
@@ -79,89 +78,104 @@
                 return a;
             }
             
+            invMm = 1.0/(M-m);
+            
             // compute PDF, CDF in O(n) steps
-            PDF = new Array64F(N);
-            CDF = new Array64F(N+1);
-            sum = 0; norm = 1/(M-m); 
-            for (i=0; i<N; i+=2)
-            {
-                PDF[i] = norm*(a[i]-m);
-                sum += PDF[i];
-                PDF[i+1] = norm*(a[i+1]-m);
-                sum += PDF[i+1];
-            }
-            if (isOdd)
-            {
-                PDF[N-1] = norm*(a[N-1]-m);
-                sum += PDF[N-1];
-            }
-            
             // CDF(x)=P(X<=x)  =x (for uniform variable)
-            norm = 1/sum; 
+            var indexes = new Array32U(N), CDF = new Array64F(N+1), sum = 0, off;
             CDF[0] = 0;
+            norm = invMm; 
+            norm2 = (N)*norm;
+            off = -m+1;
+            // one-level partial loop unrolling
             for (i=0; i<N; i+=2)
             {
-                CDF[i+1] = PDF[i]*norm + CDF[i];
-                CDF[i+2] = PDF[i+1]*norm + CDF[i+1];
+                // !! normalizations helps deal with possible numeric overflow / numeric instabilities..
+                // !! possible issues if N is very-very large??
+                // handle the data as if it is a PDF sequence
+                CDF[i+1] = norm*(a[i]+off) + CDF[i];
+                CDF[i+2] = norm*(a[i+1]+off) + CDF[i+1];
+                
+                indexes[i] = Round( norm2*(a[i]+off) );
+                indexes[i+1] = Round( norm2*(a[i+1]+off) );
             }
             if (isOdd)
             {
-                CDF[N] = PDF[N-1]*norm + CDF[N-1];
+                // loop remainder, if any
+                CDF[N] = norm*(a[N-1]+off) + CDF[N-1];
+                
+                indexes[N-1] = Round( norm2*(a[N-1]+off) );
             }
-            PDF = null;   //delete it now
-            
-            //
-            // CDF map, groups elements of similar dynamic range together (maps them in similar index), it seems
-            // possibly this can be used in a recursion, or possibly using another sort (eg indexsort, counting sort, quicksort, etc..)
-            //
-            
-            indexes = new Array32U(N); 
-            norm = (N)/(M-m);
-            for (i=0; i<N; i++) 
-                indexes[i] = ~~(norm*(a[i]-m) + 0.5); 
+            sum = CDF[N];
             
             // find dynamic ranges in O(n) steps
-            rangesmap = new Array32U(N);
-            for (i=0; i<N; i++)  rangesmap[i] = 0;
-            
-            ranges = new Array();
-            //norm=(N)/(M-m);
-            
+            norm = (N-1)/sum;
+            var range = new Array(N), Mmr = new Array(N);
+            for (i=0; i<N; i++)  range[i] = null;
             for (i=0; i<N; i++)
             {
-                ai = ~~( (N-1) * CDF[ indexes[i] ]  +0.5);
-                if (rangesmap[ai])
+                //
+                // CDF inverse mapping, groups elements of similar dynamic range together 
+                // (produces equidistributable/homogeneous ranges of numbers)
+                // this is a non-linear mapping, computed from the data itself
+                // it can also be used in a recursive-style (a-la bucketsort), 
+                // using another sub-sort method (eg indexsort, countingsort, quicksort, etc..)
+                //
+                ai = Round( norm * CDF[ indexes[ i ] ] );
+                x = a[i];
+                
+                if ( !range[ai] )
                 {
-                    ranges[rangesmap[ai]-1].push( a[i] );
+                    range[ai] = [ x ];
+                    Mmr[ai] = new Array64F( [x, x] );
                 }
                 else
                 {
-                    rangesmap[ai] = ranges.length+1;
-                    ranges.push( [ a[i] ] );
+                    range[ai].push( x );
+                    // get min-max range
+                    if ( x > Mmr[ai][1] ) Mmr[ai][1] = x;
+                    else if ( x < Mmr[ai][0] ) Mmr[ai][0] = x;
                 }
             }
-            CDF = null;   // delete it now
+            // delete them now
+            indexes = CDF = null;
             
-            offset = 0;
+            var offset = 0, Ar, Nr, mr, Mr, j;
+            // this step can be parallelized easily, eg. one for each non-null range
             for (i=0; i<N; i++)
             {
-                if (rangesmap[i])
+                if ( null!==range[i] )
                 {
-                    Ar = ranges[rangesmap[i]-1];
+                    Ar = range[i];
                     Nr = Ar.length;
+                    mr = Mmr[i][0];
+                    Mr = Mmr[i][1];
                     
-                    if (Nr>1)
+                    // add them to the original array in-place, sorted
+                    
+                    if (mr==Mr)
                     {
-                        // recursion ??
-                        subSort( Ar ); 
+                        // all duplicates or a single element, add them in place
                         splice.apply(a, [offset, Nr].concat( Ar ) );
-                        offset += Nr;
                     }
                     else
                     {
-                        splice.apply(a, [offset, Nr].concat( Ar ) );
-                        offset += Nr;
+                        // find the correct places dynamically
+                        // this is supposed to work
+                        // because each range has equidistributable values
+                        // (created by reverse CDF mapping in previous steps)
+                        // so can compute the position indexes relatively easily
+                        // what about partial duplicates?? ( taken care in previous if ?? NO )
+                        norm = (Nr-1)/(M-m);
+                        for (j=0; j<Nr; j++)
+                        {
+                            ai = Round( norm * (Ar[j]-mr) );
+                            a[ offset + ai ] = Ar[ j ];
+                        }
                     }
+                    offset += Nr;
+                    // delete them now
+                    range[i] = Mmr[i] = null;
                 }
             }
         }
@@ -169,5 +183,6 @@
         return a;
     };
     Sort.StatisticalSort.reference = "#A Custom Algorithm";
+    Sort.StatisticalSort.description = "(in progress)";
     
 })(Sort);

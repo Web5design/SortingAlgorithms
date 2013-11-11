@@ -54,7 +54,6 @@
         // in-place
         return a;
     };
-    Sort.RecursiveQuickSort.reference = "http://en.wikipedia.org/wiki/Quicksort";
     
     // http://www.geeksforgeeks.org/iterative-quick-sort/
     Sort.QuickSort = function(a, left, right) {
@@ -105,7 +104,8 @@
         // in-place
         return a;
     };
-    Sort.QuickSort.reference = "http://en.wikipedia.org/wiki/Quicksort";
+    Sort.RecursiveQuickSort.reference = Sort.QuickSort.reference = "http://en.wikipedia.org/wiki/Quicksort";
+    Sort.RecursiveQuickSort.description = Sort.QuickSort.description = "Quicksort is a sorting algorithm that, on average, makes O(nlogn) comparisons to sort n items. In the worst case, it makes O(n<sup>2</sup>) comparisons, though this behavior is rare. Quicksort is often faster in practice than other O(nlogn) algorithms. Additionally, quicksort's sequential and localized memory references work well with a cache. Quicksort is a comparison sort and, in efficient implementations, is not a stable sort.";
     
     
 })(Sort);

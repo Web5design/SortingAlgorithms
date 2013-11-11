@@ -138,6 +138,7 @@
         return a;
     };
     Sort.LibrarySort.reference = "http://en.wikipedia.org/wiki/Library_sort";
+    Sort.LibrarySort.description = "Library sort, or gapped insertion sort is a sorting algorithm that uses an insertion sort, but with gaps in the array to accelerate subsequent insertions. Like the insertion sort it is based on, library sort is a stable comparison sort and can be run as an online algorithm; however, it was shown to have a high probability of running in O(nlogn) time (comparable to quicksort), rather than an insertion sort's O(n<sup>2</sup>).";
     
     
 })(Sort);

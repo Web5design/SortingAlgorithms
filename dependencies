@@ -28,13 +28,12 @@
 
 ### Number/Count-Based Algorithms ###
 
-# almost ready
-./src/arithmetic/IndexSort.js
-
 ./src/arithmetic/CountingSort.js
 ./src/arithmetic/BucketSort.js
 
-# almost ready
+## a couple of custom algorithms ##
+./src/arithmetic/IndexSort.js
+# not complete, in progress
 ./src/arithmetic/StatisticalSort.js
 
 @  # dummy separator

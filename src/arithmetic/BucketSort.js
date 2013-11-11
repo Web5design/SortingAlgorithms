@@ -140,6 +140,7 @@
         return a;
     };
     Sort.BucketSort.reference = "http://en.wikipedia.org/wiki/Bucket_sort";
+    Sort.BucketSort.description = "Bucket sort is a sorting algorithm that works by partitioning an array into a number of buckets. Each bucket is then sorted individually, either using a different sorting algorithm, or by recursively applying the bucket sorting algorithm. It is a distribution sort, and is a cousin of radix sort in the most to least significant digit flavour. Bucket sort is a generalization of pigeonhole sort. Since bucket sort is not a comparison sort, the &Omega;(nlogn) lower bound is inapplicable. The computational complexity estimates involve the number of buckets.";
     
     
 })(Sort);

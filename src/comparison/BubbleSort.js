@@ -30,5 +30,6 @@
         return a;
     };
     Sort.BubbleSort.reference = "http://en.wikipedia.org/wiki/Bubble_sort";
+    Sort.BubbleSort.description = "Bubble sort is a simple sorting algorithm that works by repeatedly stepping through the list to be sorted, comparing each pair of adjacent items and swapping them if they are in the wrong order. The pass through the list is repeated until no swaps are needed, which indicates that the list is sorted.";
     
 })(Sort);

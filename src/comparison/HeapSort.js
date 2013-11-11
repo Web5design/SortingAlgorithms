@@ -76,6 +76,7 @@
         return a;
     };
     Sort.HeapSort.reference = "http://en.wikipedia.org/wiki/Heap_sort";
+    Sort.HeapSort.description = "Heapsort is a comparison-based sorting algorithm to create a sorted array (or list), and is part of the selection sort family. Although somewhat slower in practice on most machines than a well-implemented quicksort, it has the advantage of a more favorable worst-case O(nlogn) runtime.";
     
     
 })(Sort);

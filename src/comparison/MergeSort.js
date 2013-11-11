@@ -54,7 +54,6 @@
         // in-place
         return a;
     };
-    Sort.RecursiveMergeSort.reference = "http://en.wikipedia.org/wiki/Merge_sort";
     
     // http://en.wikipedia.org/wiki/Merge_sort
     // http://www.sinbadsoft.com/blog/a-recursive-and-iterative-merge-sort-implementations/
@@ -83,7 +82,8 @@
         // in-place
         return a;
     };
-    Sort.MergeSort.reference = "http://en.wikipedia.org/wiki/Merge_sort";
+    Sort.RecursiveMergeSort.reference = Sort.MergeSort.reference = "http://en.wikipedia.org/wiki/Merge_sort";
+    Sort.RecursiveMergeSort.description = Sort.MergeSort.description = "Merge sort is an O(nlogn) comparison-based sorting algorithm. Most implementations produce a stable sort, which means that the implementation preserves the input order of equal elements in the sorted output. Mergesort is a divide and conquer algorithm.";
     
     
 })(Sort);
