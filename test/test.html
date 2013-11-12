@@ -29,35 +29,6 @@
                 text-decoration:none;
             }
             
-            #controls {
-                display: inline-block;
-            }
-            
-            .cont {
-                margin-top: 8px;
-                margin-bottom: 20px;
-            }
-            
-            #console {
-                position:relative;
-                border: 1px solid #aaa;
-                background:#efefef; 
-                color:#121212; 
-                min-height:300px;
-                padding:20px;
-                width:80%;
-            }
-            
-            #output-result {
-                min-width:20px;
-                min-height:20px;
-                background: url(css/ajax-loader.gif) 0 0 no-repeat;
-            }
-            
-            #panel > div {
-                vertical-align:top;
-            }
-            
             #footer {
                 margin-top: 20px;
             }
@@ -113,6 +84,48 @@
                 cursor:pointer;
                 position:relative;
             }
+            
+            #panel > div {
+                vertical-align:top;
+            }
+            
+            #controls {
+                display: inline-block;
+            }
+            
+            #console {
+                position:relative;
+                border: 1px solid #aaa;
+                background:#efefef; 
+                color:#121212; 
+                min-height:300px;
+                padding:20px;
+                width:80%;
+            }
+            
+            #output-result {
+                min-width:20px;
+                min-height:20px;
+                background: url(css/ajax-loader.gif) 0 0 no-repeat;
+            }
+            
+            .cont {
+                margin-top: 8px;
+                margin-bottom: 20px;
+            }
+            
+            .algo_info {
+               
+            }
+            .algo_info strong {
+                font-size: 14px;
+            }
+            .algo_info a {
+                font-size: 12px;
+            }
+            .algo_info i {
+                font-size: 12px;
+            }
         </style>
         
         <script type="text/javascript" src="./js/utils.min.js"></script>
@@ -138,12 +151,14 @@
         </script>
         
         <script type="text/html-contemplate-tpl" id="output-tpl">
-            <strong>Selected Algorithm: <% $selectedAlgorithm %></strong>
-            <br /><br />
-            <strong>Reference Link:</strong> <a href="<% $reflink %>" target="_blank"><% $reflink %></a>
-            <br /><br />
-            <strong>Summary:</strong> <i><% $desc %></i>
-            <br /><br />
+            <div class="algo_info">
+                <strong>Selected Algorithm: <% $selectedAlgorithm %></strong>
+                <br /><br />
+                <strong>Reference Link:</strong> <a href="<% $reflink %>" target="_blank"><% $reflink %></a>
+                <br /><br />
+                <strong>Summary:</strong> <i><% $desc %></i>
+                <br /><br />
+            </div>
             <div id="output-result"></div>
             <br /><br />
         </script>
@@ -207,6 +222,7 @@
                         ,'ShellSort'
                         ,'HeapSort'
                         ,'InsertionSort'
+                        ,'CycleSort'
                         ,'LibrarySort'
                         ,'RecursiveMergeSort'
                         ,'MergeSort'
@@ -221,7 +237,7 @@
                         ,'BucketSort with InsertionSort'
                         ,'BucketSort with QuickSort'
                         ,'BucketSort with IndexSort'
-                        ,'StatisticalSort (custom)'
+                        //,'StatisticalSort (custom)'
                     ]
                 }, 
                 sort_select,

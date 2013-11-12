@@ -12,7 +12,7 @@ because of its many uses
 (Ref. http://en.wikipedia.org/wiki/Sorting_algorithm)
 
 Also Sorting, in one way or another, is integral part
-of many other important algorithms and applications (see eg. Knuth)
+of many other important algorithms and applications (see eg. Knuth TAOCP)
 
 For example Sorting is very closely associated to Searching, 
 another topic of immense importance and applications
@@ -21,6 +21,8 @@ Under certain sorting states, searching can be achieved in O(logN) time
 or even in O(1) time (constant) for almost every search term
 
 Sorting has 3 approaches:
+
+(eg. NIST.gov maintains a dictionary of various algorithms at:  http://xlinux.nist.gov/dads// )
 
 ###Block vs. Online/Adaptive:
 
@@ -60,11 +62,17 @@ Is O(N) sorting possible for arbitrary random numbers??
 ------------------------------------------------------
 
 NOTE: The calculation of asymptotic complexity is done usually (using recursive relations)
-with the Master Theorem (Refs. http://en.wikipedia.org/wiki/Master_theorem, http://en.wikipedia.org/wiki/Introduction_to_Algorithms) :
+with the Master Theorem :
+
+Refs.   
+        http://en.wikipedia.org/wiki/Master_theorem, 
+        http://en.wikipedia.org/wiki/Introduction_to_Algorithms
+        
 
 T(n) = aT(n/b) + f(n),  a>=1, b>1
 
 eg. for MergeSort => T(n) = 2T(n/2) + O(n) =>  T(n) = O(nlogn)
+
 
 ---------------------------------------------------------
 

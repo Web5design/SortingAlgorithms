@@ -18,6 +18,7 @@
 ./src/comparison/ShellSort.js
 ./src/comparison/HeapSort.js
 ./src/comparison/InsertionSort.js
+./src/comparison/CycleSort.js
 ./src/comparison/LibrarySort.js
 ./src/comparison/MergeSort.js
 ./src/comparison/QuickSort.js

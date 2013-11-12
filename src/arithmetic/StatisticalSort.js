@@ -4,32 +4,39 @@
     //  Numerical/Counting Algorithms
     //
     
-    //
-    // the main idea is this :
-    // there is a 'trivial' and very fast O(n) (under all cases) algorithm
-    // that sorts N 'homogeneous-equidistant' numbers in [m, M]  (IndexSort, re-indexing the series)
-    // for general N random numbers with an arbitrary dynamic range (or CDF)
-    // if an algorithm or function can map these numbers 'uniquely' to 
-    // 'homogeneous-equidistant' numbers N in O(n) time
-    // then general (number series) sorting can be done in O(n) time (under all cases)
-    //
-    // equidistant numbers have this (more or less general) form:
-    // a[i]=Min + Perm(i)*Const, where Perm(i) is a permutation of the i's in [0, N-1] set (with possible duplicates)
-    // these can be sorted (very fast) in O(n) time (IndexSort)
-    //
-    
-    //
-    // this 'general' algorithm depends on dynamic range of the input number series
-    // possible solutions:
-    // a.  try to uniformize the dynamic range (using CDF??, possible numeric fluctuations)  => O(n)
-    // b.  use a non-linear transform to uniformize the dynamic range (which transform??, maybe CDF to uniform??) => O(n)
-    // c.  separate series in sub-series of similar dynamic range and use 'recursion' (how??) => O(n)
-    //
-    // ** the "non-linearity" is "already in the numbers series"  (physical O(n) computation)
-    //
-    // ** lexical sorting can be done with same algorithm provided any '1-1' map between strings and numbers
-    // which preserves lexical/string ordering
-    //
+    /**
+    *
+    * the main idea is this :
+    * there is a 'trivial' and very fast O(n) (under all cases) algorithm
+    * that sorts N 'homogeneous-equidistant' numbers in [m, M]  (IndexSort, re-indexing the series)
+    * for general N random numbers with an arbitrary dynamic range (or CDF)
+    * if an algorithm or function can map these numbers 'uniquely' to 
+    * 'homogeneous-equidistant' numbers N in O(n) time
+    * then general (number series) sorting can be done in O(n) time (under all cases)
+    *
+    * equidistant numbers have this (more or less general) form:
+    * a[i]=Min + Perm(i)*Const, where Perm(i) is a permutation of the i's in [0, N-1] set (with possible duplicates)
+    * these can be sorted (very fast) in O(n) time (IndexSort)
+    *
+    *
+    *
+    * this 'general' algorithm depends on dynamic range (multimodality) of the input number series
+    * possible solutions:
+    * a.  try to uniformize the dynamic range (using CDF??, possible numeric fluctuations)  => O(n)
+    * b.  use a non-linear transform to uniformize the dynamic range (which transform??, maybe CDF to uniform??) => O(n)
+    * c.  separate series in sub-series of similar dynamic range and use 'recursion' (how??) => O(n)
+    *
+    * ** the "non-linearity" is "already in the numbers series"  (physical O(n) computation)
+    *
+    * ** lexical sorting can be done with same algorithm provided any '1-1' map between strings and numbers
+    * which preserves lexical/string ordering
+    *
+    * NOTE: there are algorithms based on similar ideas, eg. 'histogram_sort' :
+    *
+    * http://stackoverflow.com/questions/6166546/sorting-algorithms-for-data-of-known-statistical-distribution
+    * http://xlinux.nist.gov/dads//HTML/histogramSort.html
+    *
+    **/
     
     //var log = console.log;
     var Array64F = Sort.Array64F, Array32U = Sort.Array32U,
