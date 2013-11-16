@@ -19,6 +19,10 @@
         if (N>1)
         {
             aclone = a.slice();
+            // actually this re-assignment is trivial
+            // it could as well be: a[i] = i;
+            // however it makes clear the idea of re-indexing the series
+            // which is generalized in IndexSort next
             for (i=0; i<N; i++) 
             { 
                 ai = aclone[ i ]; 
@@ -29,9 +33,9 @@
         return a;
     };
     Sort.PermutationSort.reference = "#A Custom Algorithm";
-    Sort.PermutationSort.description = "Algorithm for sorting permutations of the integer set [0, N-1], with no duplicates, by re-indexing";
+    Sort.PermutationSort.description = "Algorithm for sorting permutations of the integer set [0, N-1], with no duplicates, by (trivial) re-indexing";
 
-    // custom O(n) algorithm for 'homogeneous-equidistant' random numbers in [m, M] (with possible duplicates) (an extended version of PermutationSort)
+    // custom O(n) algorithm for random numbers close to being 'homogeneous-equidistant' in [m, M] (with possible duplicates) (an extended version of PermutationSort)
     // works by 're-indexing' the series
     Sort.IndexSort = function(a)  {
         var N=a.length, m, M, norm, aclone, i, ai,
@@ -106,6 +110,6 @@
         return a;
     };
     Sort.IndexSort.reference = "#A Custom Algorithm";
-    Sort.IndexSort.description = "Algorithm for 'homogeneous-equidistant' random numbers in [m, M], with possible duplicates, by re-indexing  (an extended version of PermutationSort)";
+    Sort.IndexSort.description = "Algorithm for sorting random numbers close to being 'homogeneous-equidistant' in [m, M], with possible duplicates, by re-indexing (an extended version of PermutationSort)";
     
 })(Sort);
