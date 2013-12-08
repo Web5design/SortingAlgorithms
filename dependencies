@@ -7,10 +7,11 @@
 
 # The input files
 @DEPENDENCIES
+
+### Core file ###
 ./src/Sort.js
 
 ### Comparison-Based Algorithms ###
-
 ./src/comparison/BuiltinSort.js
 
 ./src/comparison/BubbleSort.js
@@ -28,7 +29,6 @@
 
 
 ### Number/Count-Based Algorithms ###
-
 ./src/arithmetic/CountingSort.js
 ./src/arithmetic/BucketSort.js
 
@@ -41,6 +41,16 @@
 
 # TODO, allow some pre-process to take place
 #@PREPROCESS
+
+# Any texts to be replaced in the final file
+@REPLACE
+"@@VERSION@@" = "0.1"
+
+# Extract documentation from the source
+@DOC
+"STARTDOC" = "/**[DOC_MARKUP]"
+"ENDDOC" = "[/DOC_MARKUP]**/"
+"OUTPUT" = "./manual.md"
 
 # Minify the Package
 @MINIFY
